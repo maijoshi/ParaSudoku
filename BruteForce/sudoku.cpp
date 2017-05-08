@@ -1,12 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include "../CycleTimer.h"
 
 using namespace std;
 
-#define ROW_NUM 9//4
-#define COL_NUM 9//4
-#define BLOCK_SIZE 3
+#define ROW_NUM 4//4
+#define COL_NUM 4//4
+#define BLOCK_SIZE 2
+#define MAX_ITER 100
+
+int cnt = 0;
 
 bool noConflicts(int matrix[ROW_NUM][COL_NUM], int row, int col, int num) {
 	
@@ -31,7 +35,7 @@ bool noConflicts(int matrix[ROW_NUM][COL_NUM], int row, int col, int num) {
 }
 
 bool sudokuSolver(int matrix[ROW_NUM][COL_NUM], int row, int col) {
-	
+	cnt++;
 	if (row >= ROW_NUM || col >= COL_NUM) 
 		return true;
 
@@ -84,20 +88,29 @@ int main() {
 	int num;
 	int i, j = 0;
 
-	ifstream myfile ("sudoku.txt");
+	ifstream myfile ("../test/sudoku.txt");
 
-	while (myfile.is_open() && myfile >> num) {
-		matrix[i][j] = num;
+	double time = 0.0;
+	cnt = 0;
+	for (int i = 0; i < MAX_ITER; i++) {
+		while (myfile.is_open() && myfile >> num) {
+			matrix[i][j] = num;
 
-		if (j < COL_NUM - 1)
-			j++;
-		else {
-			i++;
-			j = 0;
+			if (j < COL_NUM - 1)
+				j++;
+			else {
+				i++;
+				j = 0;
+			}
 		}
+		
+		double startTime = CycleTimer::currentSeconds();
+		sudokuSolver(matrix, 0, 0);
+		double endTime = CycleTimer::currentSeconds();
+		time += endTime - startTime;
 	}
-
-	sudokuSolver(matrix, 0, 0);
 	printSolution(matrix);
+	printf("average time: %f\n", time);
+	cout << cnt;
 	return 0;
 }

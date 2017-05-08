@@ -7,16 +7,21 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include <stack>
 #include <unordered_map>
+#include "cycleTimer.h"
 
 #define ROW 0
 #define COL 1
 #define BOX 2
+#define NDEBUG
+#define MAX_ITER 100
 using namespace std;
 
-const int size = 9;
-int box_size = 3;
+const int size = 4;
+int box_size = 2;
 unordered_map<int, vector<vector<vector<int>>>> comb_map;
 
 class Board {
@@ -37,7 +42,8 @@ public:
             for (int j = 0; j < size; j++) {
                 cout << i << ", " << j << ": ";
                 for (int k = 0; k < size; k++)
-                    if ((markup[i][j] >> k) & 1)   cout << k+1 << " ";
+                    if ((markup[i][j] >> k) & 1)
+                        cout << k+1 << " ";
                 cout << endl;
             }
         }
@@ -119,7 +125,7 @@ public:
         }
         return ret;
     }
-
+    
     
     vector<int> getPossibleValues(int i, int j) {
         int x = markup[i][j];
@@ -134,7 +140,7 @@ public:
     
     void setBoardVal(int row, int col, int val) {
         board[row][col] = val;
-        cout << "set " << row << ", " << col << "to " << val << endl;
+        // cout << "set " << row << ", " << col << "to " << val << endl;
         markup[row][col] = 0;
         for (int i = 0; i < size; i++) {
             removeFromMarkup(row, i, val);
@@ -184,8 +190,10 @@ bool Board::loneRangers() {
             if (cnt == 1) {
                 // found lone ranger
                 setBoardVal(i, col, k);
+#ifndef DEBUG
                 cout << "lone ranger - checked row:" << endl;
                 printMarkup();
+#endif
                 return true;
             }
         }
@@ -206,8 +214,10 @@ bool Board::loneRangers() {
             if (cnt == 1) {
                 // found lone ranger
                 setBoardVal(row, j, k);
-                cout << "lone ranger - checked col:" << endl;
-                printMarkup();
+#ifndef DEBUG
+                 cout << "lone ranger - checked col:" << endl;
+                                printMarkup();
+#endif
                 return true;
             }
         }
@@ -237,8 +247,8 @@ bool Board::loneRangers() {
                 if (cnt == 1) {
                     // found lone ranger
                     setBoardVal(index/box_size+i, index%box_size+j, k);
-                    cout << "lone ranger - checked box:" << endl;
-                    printMarkup();
+                    // cout << "lone ranger - checked box:" << endl;
+                    //                    printMarkup();
                     return true;
                 }
             }
@@ -268,11 +278,9 @@ vector<vector<int>> comb(int n, int r)
         vector<int> combination;
         for (int i = 0; i < n; ++i) {
             if (v[i]) {
-//                cout << (i + 1) << " ";
                 combination.push_back(i);
             }
         }
-//        cout << endl;
         combinations.push_back(combination);
     } while (prev_permutation(v.begin(), v.end()));
     return combinations;
@@ -299,18 +307,20 @@ bool Board::findPreemptiveSet(int setSize) {
             }
             if (cnt == setSize) {
                 // found preemptive set
+#ifndef DEBUG
                 cout << "pset found: row=" << row << " ";
                 for (int in: indexes[i])
-                    cout << unfilled[in] << " ";
+                     cout << unfilled[in] << " ";
                 cout << endl;
+#endif
                 vector<int> pset;
                 bool b = false;
                 for (int k = 0; k < size; k++) {
                     if ((res >> k) & 1) {
                         for (int jj = 0; jj < size; jj++)
                             if (find(tmp.begin(), tmp.end(), jj) == tmp.end())
-                                 if (removeFromMarkup(row, jj, k+1))
-                                     b = true;
+                                if (removeFromMarkup(row, jj, k+1))
+                                    b = true;
                     }
                 }
                 return b;
@@ -338,10 +348,13 @@ bool Board::findPreemptiveSet(int setSize) {
                 }
                 if (cnt == setSize) {
                     // found preemptive set
+                    
+#ifndef DEBUG
                     cout << "pset found: col=" << col << " ";
                     for (int in: indexes[i])
                         cout << unfilled[in] << " ";
                     cout << endl;
+#endif
                     vector<int> pset;
                     bool b = false;
                     for (int k = 0; k < size; k++) {
@@ -355,70 +368,134 @@ bool Board::findPreemptiveSet(int setSize) {
                     return b;
                 }
             }
-            
-            
         }
-//        for (int j = 0; j < size; j++) {
-//            if (getPossibilitiesCnt(i, j) == 2) {
-//                for (int k = j+1; k < size; k++) {
-//                    if (markup[i][k] == markup[i][j]) {
-//                        vector<int> twinNums = getPossibleValues(i, j);
-//                        // found twins
-//                        for (int jj = 0; jj < size; jj++) {
-//                            if (jj == k || jj == j) continue;
-//                            removeFromMarkup(i, jj, twinNums[0]);
-//                            removeFromMarkup(i, jj, twinNums[1]);
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
     return false;
+}
+
+bool noConflicts(int matrix[size][size], int row, int col, int num) {
+    
+    for (int i = 0; i < size; i++) {
+        if (matrix[i][col] == num)
+            return false;
+    }
+    
+    for (int j = 0; j < size; j++) {
+        if (matrix[row][j] == num)
+            return false;
+    }
+    
+    for (int i = 0; i < box_size; i++) {
+        for (int j = 0; j < box_size; j++) {
+            if (matrix[(row/box_size)*box_size + i][(col/box_size)*box_size + j] == num)
+                return false;
+        }
+    }
+    
+    return true;
+}
+int cnt = 0;
+void backtracking(Board &crook_result) {
+    stack<Board> stk;
+    Board tmp(crook_result);
+    stk.push(tmp);
+    bool done = false;
+    
+    while (!done) {
+        cnt++;
+        Board b = stk.top();
+        stk.pop();
+        if (b.getTotalUnfilledCellsNum() == 0) {
+            crook_result = b;
+            break;
+        }
+        int i;
+        for (i = 0; i < size * size; i++) {
+            int row = i/size;
+            int col = i%size;
+            if (!b.board[row][col]) {
+                int k;
+                for (k = 1; k <= size; k++) {
+                    if (noConflicts(b.board, row, col, k)) {
+                        b.board[row][col] = k;
+                        stk.push(b);
+                    }
+                }
+                break;
+            }
+        }
+    }
 }
 
 int main() {
     for (int i = 1; i <= 9; i++)
         for (int j = 1; j <= i; j++)
             comb_map[i].push_back(comb(i, j));
-    Board b;
+    Board bb;
+    //    for (int i = 0; i < size; i++) {
+    //        for (int j = 0; j < size; j++) {
+    //            cin >> b.board[i][j];
+    //        }
+    //    }
+    ifstream myfile ("test/sudoku.txt");
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            cin >> b.board[i][j];
+            myfile >> bb.board[i][j];
         }
     }
-    b.initialMarkup();
-    bool done = false;
-    bool change = false;
-    
-    while (!done) {
-        done = b.elimination();
-        if (done) break;
-        change = false;
-        cout << "after elimination: " << done << endl;
-        b.printBoard();
-        b.printMarkup();
-        if (b.loneRangers()) {
-            cout << "after lone ranger search: " << endl;
-            b.printBoard();
-            continue;
-        }
-        else done = false;
-        for (int i = 2; i <= size; i++) {
-            if (b.findPreemptiveSet(i)) {
-                cout << "after findPreemptiveSet " << i << ": " << endl;
-                b.printMarkup();
-                b.printBoard();
-                change = true;
-                break;
-            }
-        }
-        if (!change) break;
+    bb.printBoard();
+    double time = 0.0;
+    double crook_time = 0.0;
+    Board b;
+    for (int iter = 0; iter < MAX_ITER; iter++) {
+        b = bb;
+        double startTime = CycleTimer::currentSeconds();
+//        b.initialMarkup();
+//        bool done = false;
+//        bool change = false;
+//    
+//        while (!done) {
+//            done = b.elimination();
+//            if (done) break;
+//            change = false;
+//#ifndef DEBUG
+//         cout << "after elimination: " << done << endl;
+//                b.printBoard();
+//                b.printMarkup();
+//#endif
+//            if (b.loneRangers()) {
+//#ifndef DEBUG
+//             cout << "after lone ranger search: " << endl;
+//                        b.printBoard();
+//#endif
+//                continue;
+//            }
+//            else done = false;
+//            for (int i = 2; i <= size; i++) {
+//                if (b.findPreemptiveSet(i)) {
+//#ifndef DEBUG
+//                    cout << "after findPreemptiveSet " << i << ": " << endl;
+//                                b.printMarkup();
+//                                b.printBoard();
+//#endif
+//                    change = true;
+//                    break;
+//                }
+//            }
+//            if (!change) break;
+//        }
+        double middleTime = CycleTimer::currentSeconds();
+//        if (!done) {
+            backtracking(b);
+//        }
+        double endTime = CycleTimer::currentSeconds();
+        time += endTime - startTime;
+        crook_time += middleTime - startTime;
     }
-    if (!done) {
-        b.backtracking();
-    }
-    cout << "final result: " << done << endl;
+    cout << cnt;
+    cout << "average time=" << time << endl;
+    cout << "average crook time=" << crook_time/MAX_ITER << endl;
     b.printBoard();
+    
     return 0;
 }
