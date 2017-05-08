@@ -6,6 +6,7 @@ using namespace std;
 
 #define ROW_NUM 9//4
 #define COL_NUM 9//4
+#define BLOCK_SIZE 3
 
 bool noConflicts(int matrix[ROW_NUM][COL_NUM], int row, int col, int num) {
 	
@@ -17,6 +18,13 @@ bool noConflicts(int matrix[ROW_NUM][COL_NUM], int row, int col, int num) {
 	for (int j = 0; j < COL_NUM; j++) {
 		if (matrix[row][j] == num) 
 			return false;
+	}
+
+	for (int i = 0; i < BLOCK_SIZE; i++) {
+		for (int j = 0; j < BLOCK_SIZE; j++) {
+			if (matrix[(row/BLOCK_SIZE)*BLOCK_SIZE + i][(col/BLOCK_SIZE)*BLOCK_SIZE + j] == num) 
+				return false;
+		}
 	}
 
 	return true;
