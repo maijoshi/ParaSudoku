@@ -4,8 +4,8 @@
 
 using namespace std;
 
-#define ROW_NUM 4
-#define COL_NUM 4
+#define ROW_NUM 9//4
+#define COL_NUM 9//4
 
 bool noConflicts(int matrix[ROW_NUM][COL_NUM], int row, int col, int num) {
 	
