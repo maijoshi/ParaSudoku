@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+
 #define ROW 0
 #define COL 1
 #define BOX 2
@@ -15,6 +17,7 @@ using namespace std;
 
 const int size = 9;
 int box_size = 3;
+unordered_map<int, vector<vector<vector<int>>>> comb_map;
 
 class Board {
 public:
@@ -42,8 +45,10 @@ public:
     bool markupContains(int i, int j, int val) {
         return (markup[i][j] >> (val-1)) & 1;
     }
-    void removeFromMarkup(int i, int j, int val) {
+    bool removeFromMarkup(int i, int j, int val) {
+        bool ret = markupContains(i, j, val);
         markup[i][j] &= ~(1 << (val-1));
+        return ret;
     }
     int getPossibilitiesCnt(int i, int j) {
         int x = markup[i][j];
@@ -85,10 +90,6 @@ public:
     
     int getUnfilledCellsNum(int choice, int i) {
         int cnt = 0;
-        for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++)
-                cnt += (board[i][j] == 0);
-        return cnt;
         for (int k = 0; k < size; k++) {
             if (choice == ROW) {
                 if (!board[i][k]) cnt++;
@@ -267,11 +268,11 @@ vector<vector<int>> comb(int n, int r)
         vector<int> combination;
         for (int i = 0; i < n; ++i) {
             if (v[i]) {
-                cout << (i + 1) << " ";
+//                cout << (i + 1) << " ";
                 combination.push_back(i);
             }
         }
-        cout << endl;
+//        cout << endl;
         combinations.push_back(combination);
     } while (prev_permutation(v.begin(), v.end()));
     return combinations;
@@ -284,10 +285,12 @@ bool Board::findPreemptiveSet(int setSize) {
         vector<int> unfilled = getUnfilledCellsIndex(ROW, row);
         int num = (int) unfilled.size();
         if (num < setSize)  continue;
-        vector<vector<int>> indexes = comb(num, setSize);
+        vector<vector<int>> indexes = comb_map[num][setSize-1];//comb(num, setSize);
         for (int i = 0; i < indexes.size(); i++) {
             int res = 0;
+            vector<int> tmp;
             for (int in : indexes[i]) {
+                tmp.push_back(unfilled[in]);
                 res |= markup[row][unfilled[in]];
             }
             int cnt = 0;
@@ -296,15 +299,64 @@ bool Board::findPreemptiveSet(int setSize) {
             }
             if (cnt == setSize) {
                 // found preemptive set
+                cout << "pset found: row=" << row << " ";
+                for (int in: indexes[i])
+                    cout << unfilled[in] << " ";
+                cout << endl;
                 vector<int> pset;
+                bool b = false;
                 for (int k = 0; k < size; k++) {
                     if ((res >> k) & 1) {
                         for (int jj = 0; jj < size; jj++)
-                            removeFromMarkup(row, jj, k);
+                            if (find(tmp.begin(), tmp.end(), jj) == tmp.end())
+                                 if (removeFromMarkup(row, jj, k+1))
+                                     b = true;
                     }
                 }
-                
+                return b;
             }
+        }
+        
+        
+        // check col
+        for (int col = 0; col < size; col++) {
+            // choose set of setSize cells
+            vector<int> unfilled = getUnfilledCellsIndex(COL, col);
+            int num = (int) unfilled.size();
+            if (num < setSize)  continue;
+            vector<vector<int>> indexes = comb_map[num][setSize-1];//comb(num, setSize);
+            for (int i = 0; i < indexes.size(); i++) {
+                int res = 0;
+                vector<int> tmp;
+                for (int in : indexes[i]) {
+                    tmp.push_back(unfilled[in]);
+                    res |= markup[unfilled[in]][col];
+                }
+                int cnt = 0;
+                for (int k = 0; k < size; k++) {
+                    if ((res >> k) & 1) cnt++;
+                }
+                if (cnt == setSize) {
+                    // found preemptive set
+                    cout << "pset found: col=" << col << " ";
+                    for (int in: indexes[i])
+                        cout << unfilled[in] << " ";
+                    cout << endl;
+                    vector<int> pset;
+                    bool b = false;
+                    for (int k = 0; k < size; k++) {
+                        if ((res >> k) & 1) {
+                            for (int jj = 0; jj < size; jj++)
+                                if (find(tmp.begin(), tmp.end(), jj) == tmp.end())
+                                    if (removeFromMarkup(jj, col, k+1))
+                                        b = true;
+                        }
+                    }
+                    return b;
+                }
+            }
+            
+            
         }
 //        for (int j = 0; j < size; j++) {
 //            if (getPossibilitiesCnt(i, j) == 2) {
@@ -326,6 +378,9 @@ bool Board::findPreemptiveSet(int setSize) {
 }
 
 int main() {
+    for (int i = 1; i <= 9; i++)
+        for (int j = 1; j <= i; j++)
+            comb_map[i].push_back(comb(i, j));
     Board b;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -333,29 +388,35 @@ int main() {
         }
     }
     b.initialMarkup();
-    b.printMarkup();
     bool done = false;
+    bool change = false;
     
     while (!done) {
         done = b.elimination();
         if (done) break;
+        change = false;
         cout << "after elimination: " << done << endl;
         b.printBoard();
+        b.printMarkup();
         if (b.loneRangers()) {
             cout << "after lone ranger search: " << endl;
             b.printBoard();
             continue;
         }
         else done = false;
-        b.findPreemptiveSet(2);
-        cout << "after findPreemptiveSet 2: " << endl;
-        b.printMarkup();
-        b.printBoard();
-        
-        b.findPreemptiveSet(3);
-        cout << "after findPreemptiveSet 3: " << endl;
-        b.printMarkup();
-        b.printBoard();
+        for (int i = 2; i <= size; i++) {
+            if (b.findPreemptiveSet(i)) {
+                cout << "after findPreemptiveSet " << i << ": " << endl;
+                b.printMarkup();
+                b.printBoard();
+                change = true;
+                break;
+            }
+        }
+        if (!change) break;
+    }
+    if (!done) {
+        b.backtracking();
     }
     cout << "final result: " << done << endl;
     b.printBoard();
