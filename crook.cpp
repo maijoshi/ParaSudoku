@@ -447,27 +447,35 @@ void backtracking(Board &crook_result) {
     
     bool done = false;
     stk.push(pair<int, Board>(findNextEmptyCellIndex(tmp.board, 0), tmp));
-    
+    double sTime = CycleTimer::currentSeconds();
     vector<thread> threads;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
         threads.push_back(thread([&done, &stk, &crook_result](){
             while (!done) {
                 cnt++;
-                while (!stk.size());
                 mtx.lock();
-                int index = stk.top().first;
-                Board b = stk.top().second;
-                stk.pop();
-                mtx.unlock();
-                if (b.getTotalUnfilledCellsNum() == 0) {
-                    crook_result = b;
-                    break;
+                if (stk.size()) {
+                    int index = stk.top().first;
+                    Board b = stk.top().second;
+                    stk.pop();
+                    mtx.unlock();
+                    if (b.getTotalUnfilledCellsNum() == 0) {
+                        crook_result = b;
+                        done = true;
+                        break;
+                    }
+                    backtrackingUtil(stk, b, index, 5);
                 }
-                backtrackingUtil(stk, b, index, 5);
+                else mtx.unlock();
             }
         }));
     }
-    
+    double eTime = CycleTimer::currentSeconds();
+    cout << eTime - sTime << endl;
+    for (auto& thread:threads)
+        thread.join();
+    eTime = CycleTimer::currentSeconds();
+    cout << eTime - sTime << endl;
     
     //    cout << cnt;
 }
@@ -551,3 +559,4 @@ int main() {
     
     return 0;
 }
+
