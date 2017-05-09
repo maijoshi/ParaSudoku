@@ -158,6 +158,7 @@ public:
 };
 
 bool Board::elimination() {
+    #pragma omp parallel for 
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++) {
             int m = 0;
