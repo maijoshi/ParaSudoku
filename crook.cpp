@@ -190,7 +190,7 @@ bool Board::loneRangers() {
             if (cnt == 1) {
                 // found lone ranger
                 setBoardVal(i, col, k);
-#ifndef DEBUG
+#ifndef NDEBUG
                 cout << "lone ranger - checked row:" << endl;
                 printMarkup();
 #endif
@@ -214,7 +214,7 @@ bool Board::loneRangers() {
             if (cnt == 1) {
                 // found lone ranger
                 setBoardVal(row, j, k);
-#ifndef DEBUG
+#ifndef NDEBUG
                  cout << "lone ranger - checked col:" << endl;
                                 printMarkup();
 #endif
@@ -295,7 +295,7 @@ bool Board::findPreemptiveSet(int setSize) {
             }
             if (cnt == setSize) {
                 // found preemptive set
-#ifndef DEBUG
+#ifndef NDEBUG
                 cout << "pset found: row=" << row << " ";
                 for (int in: indexes[i])
                      cout << unfilled[in] << " ";
@@ -337,7 +337,7 @@ bool Board::findPreemptiveSet(int setSize) {
                 if (cnt == setSize) {
                     // found preemptive set
                     
-#ifndef DEBUG
+#ifndef NDEBUG
                     cout << "pset found: col=" << col << " ";
                     for (int in: indexes[i])
                         cout << unfilled[in] << " ";
@@ -454,14 +454,14 @@ int main() {
             done = b.elimination();
             if (done) break;
             change = false;
-#ifndef DEBUG
+#ifndef NDEBUG
          cout << "after elimination: " << done << endl;
                 b.printBoard();
                 b.printMarkup();
 #endif
             // step 2: lone ranger
             if (b.loneRangers()) { // if any changes made, back to step 1
-#ifndef DEBUG
+#ifndef NDEBUG
              cout << "after lone ranger search: " << endl;
                         b.printBoard();
 #endif
@@ -472,7 +472,7 @@ int main() {
             // step 3: find preemptive set with different sizes
             for (int i = 2; i < size; i++) {
                 if (b.findPreemptiveSet(i)) { // if any changes made, back to step 1
-#ifndef DEBUG
+#ifndef NDEBUG
                     cout << "after findPreemptiveSet " << i << ": " << endl;
                                 b.printMarkup();
                                 b.printBoard();
