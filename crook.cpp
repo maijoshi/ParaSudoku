@@ -3,15 +3,17 @@
 //  sudoku
 //
 //  Created by Sophie on 5/7/17.
-//  Copyright © 2017 Sophie. All rights reserved.
+//  Copyright ? 2017 Sophie. All rights reserved.
 //
 
 #include <iostream>
 #include <fstream>
+#include <thread>
 #include <vector>
 #include <stack>
 #include <unordered_map>
-#include "cycleTimer.h"
+#include "CycleTimer.h"
+#include "pthread.h"
 
 #define ROW 0
 #define COL 1
@@ -215,8 +217,8 @@ bool Board::loneRangers() {
                 // found lone ranger
                 setBoardVal(row, j, k);
 #ifndef NDEBUG
-                 cout << "lone ranger - checked col:" << endl;
-                                printMarkup();
+                cout << "lone ranger - checked col:" << endl;
+                printMarkup();
 #endif
                 return true;
             }
@@ -298,7 +300,7 @@ bool Board::findPreemptiveSet(int setSize) {
 #ifndef NDEBUG
                 cout << "pset found: row=" << row << " ";
                 for (int in: indexes[i])
-                     cout << unfilled[in] << " ";
+                    cout << unfilled[in] << " ";
                 cout << endl;
 #endif
                 vector<int> pset;
@@ -393,18 +395,22 @@ int findNextEmptyCellIndex(int matrix[size][size], int start) {
     }
     return i;
 }
-
+mutex mtx;
 bool backtrackingUtil(stack<pair<int, Board>> &stk, Board b, int index, int depth) {
     int row = index/size;
     int col = index%size;
     
     if (index >= size*size) {
+        mtx.lock();
         stk.push(pair<int, Board>(index, b));
+        mtx.unlock();
         return true;
     }
     
     if (!depth) {
+        mtx.lock();
         stk.push(pair<int, Board>(index, b));
+        mtx.unlock();
         return false;
     }
     
@@ -419,42 +425,51 @@ bool backtrackingUtil(stack<pair<int, Board>> &stk, Board b, int index, int dept
     return false;
 }
 
+void backtrackingThreadWork(Board &crook_result, stack<pair<int, Board>> &stk, bool done) {
+    while (!done) {
+        cnt++;
+        while (!stk.size());
+        mtx.lock();
+        int index = stk.top().first;
+        Board b = stk.top().second;
+        stk.pop();
+        mtx.unlock();
+        if (b.getTotalUnfilledCellsNum() == 0) {
+            crook_result = b;
+            break;
+        }
+        backtrackingUtil(stk, b, index, 5);
+    }
+}
 void backtracking(Board &crook_result) {
     stack<pair<int, Board>> stk;
     Board tmp(crook_result);
     
     bool done = false;
-    for (int i = 0; i < size*size; i++)
-        if (!tmp.board[i/size][i%size]) {
-            stk.push(pair<int, Board>(i, tmp));
-            break;
-        }
-    while (!done) {
-        cnt++;
-        int index = stk.top().first;
-        Board b = stk.top().second;
-        stk.pop();
-        if (b.getTotalUnfilledCellsNum() == 0) {
-            crook_result = b;
-            break;
-        }
-//        int row = index/size;
-//        int col = index%size;
-//        int k;
-//        for (k = 1; k <= size; k++) {
-//            if (noConflicts(b.board, row, col, k)) {
-//                b.board[row][col] = k;
-//                int ii;
-//                for (ii = index+1; ii < size*size; ii++)
-//                    if (!b.board[ii/size][ii%size]) {
-//                        break;
-//                    }
-//                    stk.push(pair<int, Board>(ii, b));
-//            }
-//        }
-        backtrackingUtil(stk, b, index, 10);
+    stk.push(pair<int, Board>(findNextEmptyCellIndex(tmp.board, 0), tmp));
+    
+    vector<thread> threads;
+    for (int i = 0; i < 5; i++) {
+        threads.push_back(thread([&done, &stk, &crook_result](){
+            while (!done) {
+                cnt++;
+                while (!stk.size());
+                mtx.lock();
+                int index = stk.top().first;
+                Board b = stk.top().second;
+                stk.pop();
+                mtx.unlock();
+                if (b.getTotalUnfilledCellsNum() == 0) {
+                    crook_result = b;
+                    break;
+                }
+                backtrackingUtil(stk, b, index, 5);
+            }
+        }));
     }
-    cout << cnt;
+    
+    
+    //    cout << cnt;
 }
 
 int main() {
@@ -491,15 +506,15 @@ int main() {
             if (done) break;
             change = false;
 #ifndef NDEBUG
-         cout << "after elimination: " << done << endl;
-                b.printBoard();
-                b.printMarkup();
+            cout << "after elimination: " << done << endl;
+            b.printBoard();
+            b.printMarkup();
 #endif
             // step 2: lone ranger
             if (b.loneRangers()) { // if any changes made, back to step 1
 #ifndef NDEBUG
-             cout << "after lone ranger search: " << endl;
-                        b.printBoard();
+                cout << "after lone ranger search: " << endl;
+                b.printBoard();
 #endif
                 continue;
             }
@@ -510,8 +525,8 @@ int main() {
                 if (b.findPreemptiveSet(i)) { // if any changes made, back to step 1
 #ifndef NDEBUG
                     cout << "after findPreemptiveSet " << i << ": " << endl;
-                                b.printMarkup();
-                                b.printBoard();
+                    b.printMarkup();
+                    b.printBoard();
 #endif
                     change = true;
                     break;
@@ -529,7 +544,7 @@ int main() {
         time += endTime - startTime;
         crook_time += middleTime - startTime;
     }
-//    cout << cnt;
+    //    cout << cnt;
     cout << "average time=" << time/MAX_ITER << endl;
     cout << "average crook time=" << crook_time/MAX_ITER << endl;
     b.printBoard();
