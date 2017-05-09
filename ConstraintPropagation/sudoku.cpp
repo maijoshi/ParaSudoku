@@ -42,12 +42,19 @@ vector<vector<string> > createUnitList(string rows, string cols) {
 	vector<vector<string> > totalVector;
 
 	for (int c = 0; c < COL_NUM; c++) {
-		totalVector.push_back(cross(rows, "" + cols[c]));
+        stringstream ss;
+        ss << cols[c];
+        string s = ss.str();
+		totalVector.push_back(cross(rows, s));
 	}
 
 	for (int r = 0; r < ROW_NUM; r++) {
-		totalVector.push_back(cross("" + rows[r], cols));
+        stringstream ss;
+        ss << rows[r];
+        string s = ss.str();
+		totalVector.push_back(cross(s, cols));
 	}
+    return totalVector;
 }
 
 string digits = "123456789";
@@ -94,8 +101,8 @@ unordered_map<string, string> eliminate(unordered_map<string, string> values, st
 		} */
 	}
 
-
-
+    return empty;
+    
 
 }
 
@@ -129,7 +136,7 @@ unordered_map<string, int> grid_values(int matrix[ROW_NUM][COL_NUM]) {
 	cout << "grid_values" << endl;
 	for (int i = 0; i < ROW_NUM; i++) {
 		for (int j = 0; j < COL_NUM; j++) {
-			grid_values.insert(make_pair<string,int>(squares[i*ROW_NUM+j], matrix[i][j]));
+			grid_values.insert(pair<string,int>(squares[i*ROW_NUM+j], matrix[i][j]));
 			//cout << squares[i*ROW_NUM+j] << " " << matrix[i][j] << endl;
 		}
 	}
@@ -144,7 +151,7 @@ unordered_map<string, string> parseGrid(int matrix[ROW_NUM][COL_NUM]) {
 	cout << "parseGrid" << endl;
 
 	for (std::vector<string>::iterator i = squares.begin(); i != squares.end(); ++i) {
-    	values.insert(make_pair<std::string,string>(*i, digits));
+    	values.insert(pair<std::string,string>(*i, digits));
     }
 
     for (auto it : grid_values(matrix)) {
