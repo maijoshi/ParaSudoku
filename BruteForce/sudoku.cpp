@@ -5,10 +5,10 @@
 
 using namespace std;
 
-#define ROW_NUM 4//4
-#define COL_NUM 4//4
+#define ROW_NUM 9//4
+#define COL_NUM 9//4
 #define BLOCK_SIZE 2
-#define MAX_ITER 100
+#define MAX_ITER 1
 
 int cnt = 0;
 
