@@ -247,8 +247,6 @@ bool Board::loneRangers() {
                 if (cnt == 1) {
                     // found lone ranger
                     setBoardVal(index/box_size+i, index%box_size+j, k);
-                    // cout << "lone ranger - checked box:" << endl;
-                    //                    printMarkup();
                     return true;
                 }
             }
@@ -258,16 +256,6 @@ bool Board::loneRangers() {
     return false;
 }
 
-//bool Board::findTwins() { // maybe when I have time
-//    // check row
-//    for (int i = 0; i < size; i++) {
-//        for (int n1 = 1; n1 <= size; n1++) {
-//            for (
-//        }
-//        for (int j = 0;)
-//    }
-//    return false;
-//}
 vector<vector<int>> comb(int n, int r)
 {
     vector<bool> v(n);
@@ -395,6 +383,7 @@ bool noConflicts(int matrix[size][size], int row, int col, int num) {
     return true;
 }
 int cnt = 0;
+
 void backtracking(Board &crook_result) {
     stack<pair<int, Board>> stk;
     Board tmp(crook_result);
@@ -415,40 +404,34 @@ void backtracking(Board &crook_result) {
             break;
         }
         int i = index;
-//        for (i = 0; i < size * size; i++) {
-            int row = i/size;
-            int col = i%size;
-//            if (!b.board[row][col]) {
-                int k;
-                for (k = 1; k <= size; k++) {
-                    if (noConflicts(b.board, row, col, k)) {
-                        b.board[row][col] = k;
-                        int ii;
-                        for (ii = index+1; ii < size*size; ii++)
-                            if (!b.board[ii/size][ii%size]) {
-//                                stk.push(pair<int, Board>(ii, b));
-                                break;
-                            }
-//                        stk.push(b);
-                        stk.push(pair<int, Board>(ii, b));
+        int row = i/size;
+        int col = i%size;
+        int k;
+        for (k = 1; k <= size; k++) {
+            if (noConflicts(b.board, row, col, k)) {
+                b.board[row][col] = k;
+                int ii;
+                for (ii = index+1; ii < size*size; ii++)
+                    if (!b.board[ii/size][ii%size]) {
+                        break;
                     }
-                }
-//                break;
-//            }
-//        }
+                    stk.push(pair<int, Board>(ii, b));
+            }
+        }
     }
 }
 
 int main() {
+    Board bb;
+    double time = 0.0;
+    double crook_time = 0.0;
+    
+    // get combinations
     for (int i = 1; i <= 9; i++)
         for (int j = 1; j <= i; j++)
             comb_map[i].push_back(comb(i, j));
-    Board bb;
-    //    for (int i = 0; i < size; i++) {
-    //        for (int j = 0; j < size; j++) {
-    //            cin >> b.board[i][j];
-    //        }
-    //    }
+    
+    // read from file input
     ifstream myfile ("test/sudoku.txt");
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -456,8 +439,8 @@ int main() {
         }
     }
     bb.printBoard();
-    double time = 0.0;
-    double crook_time = 0.0;
+    
+    
     Board b;
     for (int iter = 0; iter < MAX_ITER; iter++) {
         b = bb;
@@ -467,6 +450,7 @@ int main() {
         bool change = false;
         bool use_crook = true;//false;
         while (!done && use_crook) {
+            // step 1: elimination
             done = b.elimination();
             if (done) break;
             change = false;
@@ -475,7 +459,8 @@ int main() {
                 b.printBoard();
                 b.printMarkup();
 #endif
-            if (b.loneRangers()) {
+            // step 2: lone ranger
+            if (b.loneRangers()) { // if any changes made, back to step 1
 #ifndef DEBUG
              cout << "after lone ranger search: " << endl;
                         b.printBoard();
@@ -483,8 +468,10 @@ int main() {
                 continue;
             }
             else done = false;
-            for (int i = 2; i <= size; i++) {
-                if (b.findPreemptiveSet(i)) {
+            
+            // step 3: find preemptive set with different sizes
+            for (int i = 2; i < size; i++) {
+                if (b.findPreemptiveSet(i)) { // if any changes made, back to step 1
 #ifndef DEBUG
                     cout << "after findPreemptiveSet " << i << ": " << endl;
                                 b.printMarkup();
@@ -494,9 +481,11 @@ int main() {
                     break;
                 }
             }
-            if (!change) break;
+            if (!change) break; // no progress, leave it to backtracking
         }
+        
         double middleTime = CycleTimer::currentSeconds();
+        // if solution not found yet, use brute force
         if (!done) {
             backtracking(b);
         }
