@@ -384,6 +384,41 @@ bool noConflicts(int matrix[size][size], int row, int col, int num) {
 }
 int cnt = 0;
 
+int findNextEmptyCellIndex(int matrix[size][size], int start) {
+    int i;
+    for (i = start; i < size*size; i++) {
+        if (matrix[i/size][i%size] == 0) {
+            return i;
+        }
+    }
+    return i;
+}
+
+bool backtrackingUtil(stack<pair<int, Board>> &stk, Board b, int index, int depth) {
+    int row = index/size;
+    int col = index%size;
+    
+    if (index >= size*size) {
+        stk.push(pair<int, Board>(index, b));
+        return true;
+    }
+    
+    if (!depth) {
+        stk.push(pair<int, Board>(index, b));
+        return false;
+    }
+    
+    for (int k = 1; k <= size; k++) {
+        if (noConflicts(b.board, row, col, k)) {
+            b.board[row][col] = k;
+            if (backtrackingUtil(stk, b, findNextEmptyCellIndex(b.board, index + 1), depth - 1))
+                return true;
+        }
+    }
+    
+    return false;
+}
+
 void backtracking(Board &crook_result) {
     stack<pair<int, Board>> stk;
     Board tmp(crook_result);
@@ -403,22 +438,23 @@ void backtracking(Board &crook_result) {
             crook_result = b;
             break;
         }
-        int i = index;
-        int row = i/size;
-        int col = i%size;
-        int k;
-        for (k = 1; k <= size; k++) {
-            if (noConflicts(b.board, row, col, k)) {
-                b.board[row][col] = k;
-                int ii;
-                for (ii = index+1; ii < size*size; ii++)
-                    if (!b.board[ii/size][ii%size]) {
-                        break;
-                    }
-                    stk.push(pair<int, Board>(ii, b));
-            }
-        }
+//        int row = index/size;
+//        int col = index%size;
+//        int k;
+//        for (k = 1; k <= size; k++) {
+//            if (noConflicts(b.board, row, col, k)) {
+//                b.board[row][col] = k;
+//                int ii;
+//                for (ii = index+1; ii < size*size; ii++)
+//                    if (!b.board[ii/size][ii%size]) {
+//                        break;
+//                    }
+//                    stk.push(pair<int, Board>(ii, b));
+//            }
+//        }
+        backtrackingUtil(stk, b, index, 10);
     }
+    cout << cnt;
 }
 
 int main() {
@@ -493,7 +529,7 @@ int main() {
         time += endTime - startTime;
         crook_time += middleTime - startTime;
     }
-    cout << cnt;
+//    cout << cnt;
     cout << "average time=" << time/MAX_ITER << endl;
     cout << "average crook time=" << crook_time/MAX_ITER << endl;
     b.printBoard();
