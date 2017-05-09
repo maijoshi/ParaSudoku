@@ -17,11 +17,11 @@
 #define COL 1
 #define BOX 2
 #define NDEBUG
-#define MAX_ITER 100
+#define MAX_ITER 1
 using namespace std;
 
-const int size = 4;
-int box_size = 2;
+const int size = 9;
+int box_size = 3;
 unordered_map<int, vector<vector<vector<int>>>> comb_map;
 
 class Board {
@@ -396,34 +396,46 @@ bool noConflicts(int matrix[size][size], int row, int col, int num) {
 }
 int cnt = 0;
 void backtracking(Board &crook_result) {
-    stack<Board> stk;
+    stack<pair<int, Board>> stk;
     Board tmp(crook_result);
-    stk.push(tmp);
-    bool done = false;
     
+    bool done = false;
+    for (int i = 0; i < size*size; i++)
+        if (!tmp.board[i/size][i%size]) {
+            stk.push(pair<int, Board>(i, tmp));
+            break;
+        }
     while (!done) {
         cnt++;
-        Board b = stk.top();
+        int index = stk.top().first;
+        Board b = stk.top().second;
         stk.pop();
         if (b.getTotalUnfilledCellsNum() == 0) {
             crook_result = b;
             break;
         }
-        int i;
-        for (i = 0; i < size * size; i++) {
+        int i = index;
+//        for (i = 0; i < size * size; i++) {
             int row = i/size;
             int col = i%size;
-            if (!b.board[row][col]) {
+//            if (!b.board[row][col]) {
                 int k;
                 for (k = 1; k <= size; k++) {
                     if (noConflicts(b.board, row, col, k)) {
                         b.board[row][col] = k;
-                        stk.push(b);
+                        int ii;
+                        for (ii = index+1; ii < size*size; ii++)
+                            if (!b.board[ii/size][ii%size]) {
+//                                stk.push(pair<int, Board>(ii, b));
+                                break;
+                            }
+//                        stk.push(b);
+                        stk.push(pair<int, Board>(ii, b));
                     }
                 }
-                break;
-            }
-        }
+//                break;
+//            }
+//        }
     }
 }
 
@@ -450,50 +462,50 @@ int main() {
     for (int iter = 0; iter < MAX_ITER; iter++) {
         b = bb;
         double startTime = CycleTimer::currentSeconds();
-//        b.initialMarkup();
-//        bool done = false;
-//        bool change = false;
-//    
-//        while (!done) {
-//            done = b.elimination();
-//            if (done) break;
-//            change = false;
-//#ifndef DEBUG
-//         cout << "after elimination: " << done << endl;
-//                b.printBoard();
-//                b.printMarkup();
-//#endif
-//            if (b.loneRangers()) {
-//#ifndef DEBUG
-//             cout << "after lone ranger search: " << endl;
-//                        b.printBoard();
-//#endif
-//                continue;
-//            }
-//            else done = false;
-//            for (int i = 2; i <= size; i++) {
-//                if (b.findPreemptiveSet(i)) {
-//#ifndef DEBUG
-//                    cout << "after findPreemptiveSet " << i << ": " << endl;
-//                                b.printMarkup();
-//                                b.printBoard();
-//#endif
-//                    change = true;
-//                    break;
-//                }
-//            }
-//            if (!change) break;
-//        }
+        b.initialMarkup();
+        bool done = false;
+        bool change = false;
+        bool use_crook = true;//false;
+        while (!done && use_crook) {
+            done = b.elimination();
+            if (done) break;
+            change = false;
+#ifndef DEBUG
+         cout << "after elimination: " << done << endl;
+                b.printBoard();
+                b.printMarkup();
+#endif
+            if (b.loneRangers()) {
+#ifndef DEBUG
+             cout << "after lone ranger search: " << endl;
+                        b.printBoard();
+#endif
+                continue;
+            }
+            else done = false;
+            for (int i = 2; i <= size; i++) {
+                if (b.findPreemptiveSet(i)) {
+#ifndef DEBUG
+                    cout << "after findPreemptiveSet " << i << ": " << endl;
+                                b.printMarkup();
+                                b.printBoard();
+#endif
+                    change = true;
+                    break;
+                }
+            }
+            if (!change) break;
+        }
         double middleTime = CycleTimer::currentSeconds();
-//        if (!done) {
+        if (!done) {
             backtracking(b);
-//        }
+        }
         double endTime = CycleTimer::currentSeconds();
         time += endTime - startTime;
         crook_time += middleTime - startTime;
     }
     cout << cnt;
-    cout << "average time=" << time << endl;
+    cout << "average time=" << time/MAX_ITER << endl;
     cout << "average crook time=" << crook_time/MAX_ITER << endl;
     b.printBoard();
     
