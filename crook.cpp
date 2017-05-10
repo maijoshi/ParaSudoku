@@ -11,6 +11,8 @@
 #include <thread>
 #include <vector>
 #include <stack>
+#include <algorithm>
+#include <mutex>
 #include <unordered_map>
 #include "CycleTimer.h"
 #include "pthread.h"
