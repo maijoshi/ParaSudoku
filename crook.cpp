@@ -24,7 +24,9 @@ using namespace std;
 
 const int size = 9;
 int box_size = 3;
-unordered_map<int, vector<vector<vector<int>>>> comb_map;
+int DEPTH;
+int Thread_num;
+unordered_map<int, vector<vector<vector<int> > > > comb_map;
 
 class Board {
 public:
@@ -449,7 +451,7 @@ void backtracking(Board &crook_result) {
     stk.push(pair<int, Board>(findNextEmptyCellIndex(tmp.board, 0), tmp));
     double sTime = CycleTimer::currentSeconds();
     vector<thread> threads;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < Thread_num; i++) {
         threads.push_back(thread([&done, &stk, &crook_result](){
             while (!done) {
                 cnt++;
@@ -464,7 +466,7 @@ void backtracking(Board &crook_result) {
                         done = true;
                         break;
                     }
-                    backtrackingUtil(stk, b, index, 5);
+                    backtrackingUtil(stk, b, index, DEPTH);
                 }
                 else mtx.unlock();
             }
@@ -480,10 +482,19 @@ void backtracking(Board &crook_result) {
     //    cout << cnt;
 }
 
-int main() {
+int main(int numArgs, char* args[]) {
     Board bb;
     double time = 0.0;
     double crook_time = 0.0;
+    
+    if (numArgs < 2) {
+        DEPTH = 20;
+        Thread_num = 25;
+    }
+    else {
+        DEPTH = atoi(args[1]);
+        Thread_num = atoi(args[2]);
+    }
     
     // get combinations
     for (int i = 1; i <= 9; i++)
