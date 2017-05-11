@@ -16,12 +16,14 @@
 #include <unordered_map>
 #include "CycleTimer.h"
 #include "pthread.h"
+#include <iostream>
+#include <fstream>
 
 #define ROW 0
 #define COL 1
 #define BOX 2
 #define NDEBUG
-#define MAX_ITER 1
+#define MAX_ITER 1000
 using namespace std;
 
 const int size = 25;
@@ -591,13 +593,13 @@ void backtracking(Board &crook_result) {
 
         }
     }
-    
-    for (auto& thread:threads) {
-        thread.join();
 
-    }
-//    eTime = CycleTimer::currentSeconds();
-//    cout << eTime - sTime << endl;
+    eTime = CycleTimer::currentSeconds();
+    //cout << eTime - sTime << endl;
+    for (auto& thread:threads)
+        thread.join();
+    eTime = CycleTimer::currentSeconds();
+    //cout << eTime - sTime << endl;
     
     //    cout << cnt;
 }
@@ -660,6 +662,8 @@ int main(int numArgs, char* args[]) {
     Board bb;
     double time = 0.0;
     double crook_time = 0.0;
+    ofstream outputFile;
+    outputFile.open("output.csv");
     
     if (numArgs < 2) {
         DEPTH = 5;
@@ -683,10 +687,16 @@ int main(int numArgs, char* args[]) {
         }
     }
     bb.printBoard();
+
+    double minTime = 10.0;
+    int minThreads = 1;
+    int minDepth = 1;
     
     
     Board b;
     for (int iter = 0; iter < MAX_ITER; iter++) {
+	Thread_num = iter/25+1;
+	DEPTH = iter%25+1;
         b = bb;
         double startTime = CycleTimer::currentSeconds();
         b.initialMarkup();
@@ -736,10 +746,20 @@ int main(int numArgs, char* args[]) {
         double endTime = CycleTimer::currentSeconds();
         time += endTime - startTime;
         crook_time += middleTime - startTime;
+	//outputFile << Thread_num << ", " << DEPTH <<
+	//	", " << endTime - startTime << "\n";
+
+	if (endTime - startTime < minTime) {
+	  minTime = endTime - startTime;
+	  minThreads = Thread_num;
+	  minDepth = DEPTH;
+	}
     }
     //    cout << cnt;
     cout << "average time=" << time/MAX_ITER << endl;
     cout << "average crook time=" << crook_time/MAX_ITER << endl;
+    cout << "MinThreads: " << minThreads << ", MinDepth: " << minDepth <<
+    	", minTime: " << minTime << endl;
     b.printBoard();
     
     return 0;
