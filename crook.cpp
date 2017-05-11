@@ -24,8 +24,8 @@
 #define MAX_ITER 1
 using namespace std;
 
-const int size = 9;
-int box_size = 3;
+const int size = 25;
+int box_size = 5;
 int DEPTH;
 static int Thread_num;
 unordered_map<int, vector<vector<vector<int> > > > comb_map;
@@ -400,7 +400,7 @@ int findNextEmptyCellIndex(int matrix[size][size], int start) {
     return i;
 }
 mutex mtx;
-bool backtrackingUtil(vector<pair<int, Board>> &vec, Board b, int index, int depth) {
+bool backtrackingUtil(deque<pair<int, Board>> &vec, Board b, int index, int depth) {
     int row = index/size;
     int col = index%size;
     
@@ -472,89 +472,131 @@ bool backtrackingUtil(stack<pair<int, Board>> &stk, Board b, int index, int dept
 //}
 void backtracking(Board &crook_result) {
     stack<pair<int, Board>> stk;
-    deque<pair<int, Board>> vec;
-    bool multiStack = true;
+    deque<pair<int, Board>> queue;
+    bool multiStack = false;
     
     Board tmp(crook_result);
     
     bool done = false;
     if (!multiStack) stk.push(pair<int, Board>(findNextEmptyCellIndex(tmp.board, 0), tmp));
-    double sTime = CycleTimer::currentSeconds();
-    vector<thread> threads;
 
+    vector<thread> threads;
     
+    double startTime = CycleTimer::currentSeconds();
     int index = findNextEmptyCellIndex(tmp.board, 0);
-    if (multiStack) backtrackingUtil(vec, tmp, index, DEPTH);
+    if (multiStack) backtrackingUtil(queue, tmp, index, DEPTH);
     
-    
+    double eTime = CycleTimer::currentSeconds();
+    cout << eTime - startTime << endl;
     for (int id = 0; id < Thread_num; id++) {
         if (multiStack) {
-            threads.push_back(thread([&done, &vec, id, &crook_result](){
-                int threadWorkload = (int)vec.size()/Thread_num;
-                int end = (id == Thread_num) ? vec.size():(1+id)*threadWorkload;
-                stack<pair<int, Board>> stk((vec.begin()+id*threadWorkload, vec.begin()+end));
-                for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
-                    stk.push(vec[ii]);
-                    if (id == Thread_num-1 && vec.size()%Thread_num) {
-                        for (int jj = (id+1)*threadWorkload; jj<vec.size();jj++ ) {
-                            stk.push(vec[jj]);
-                        }
-                    }
-                }
+//            threads.push_back(thread([&done, &queue, id, &crook_result](){
+#pragma omp parallel
+{
+                double sTime = CycleTimer::currentSeconds();
+                int threadWorkload = (int)queue.size()/Thread_num;
+                int end = (id == Thread_num) ? queue.size():(1+id)*threadWorkload;
+                stack<pair<int, Board>> stk_local(deque<pair<int, Board>>(queue.begin()+id*threadWorkload, queue.begin()+end));
+//                for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
+//                    stk_local.push(queue[ii]);
+//                    if (id == Thread_num-1 && queue.size()%Thread_num) {
+//                        for (int jj = (id+1)*threadWorkload; jj<queue.size();jj++ ) {
+//                            stk_local.push(queue[jj]);
+//                        }
+//                    }
+//                }
                 
                 while (!done) {
                     cnt++;
-                    if (stk.size()) {
-                        int index = stk.top().first;
-                        Board b = stk.top().second;
-                        stk.pop();
+                    if (stk_local.size()) {
+                        int index = stk_local.top().first;
+                        Board b = stk_local.top().second;
+                        stk_local.pop();
                         if (b.getTotalUnfilledCellsNum() == 0) {
                             crook_result = b;
                             done = true;
                             break;
                         }
-                        backtrackingUtil(stk, b, index, DEPTH, true);
+                        backtrackingUtil(stk_local, b, index, DEPTH, true);
                     }
                     else break;
                 }
-            }));
-
+                mtx.lock();
+                cout << CycleTimer::currentSeconds() - sTime << endl;
+                mtx.unlock();
+//            }));
+}
         }
         else {
-        threads.push_back(thread([&done, &vec, id, &stk, &crook_result](){
-//        threads.push_back(thread([&done, &vec, id, &crook_result](){
-//            int threadWorkload = (int)vec.size()/Thread_num;
-//            stack<pair<int, Board>> stk;
-//            for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
-//                stk.push(vec[ii]);
-//            }
-
-            while (!done) {
-                cnt++;
-                mtx.lock();
-                if (stk.size()) {
-                    int index = stk.top().first;
-                    Board b = stk.top().second;
-                    stk.pop();
-                    mtx.unlock();
-                    if (b.getTotalUnfilledCellsNum() == 0) {
-                        crook_result = b;
-                        done = true;
-                        break;
+//            threads.push_back(thread([&done, id, &stk, &crook_result](){
+//                    double sTime = CycleTimer::currentSeconds();
+//                //        threads.push_back(thread([&done, &vec, id, &crook_result](){
+//                //            int threadWorkload = (int)vec.size()/Thread_num;
+//                //            stack<pair<int, Board>> stk;
+//                //            for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
+//                //                stk.push(vec[ii]);
+//                //            }
+//                
+//                while (!done) {
+//                    cnt++;
+//                    mtx.lock();
+//                    if (stk.size()) {
+//                        int index = stk.top().first;
+//                        Board b = stk.top().second;
+//                        stk.pop();
+//                        mtx.unlock();
+//                        if (b.getTotalUnfilledCellsNum() == 0) {
+//                            crook_result = b;
+//                            done = true;
+//                            break;
+//                        }
+//                        backtrackingUtil(stk, b, index, DEPTH, false);
+//                    }
+//                    else mtx.unlock();
+//                }
+//                cout << CycleTimer::currentSeconds() - sTime << endl;
+//            }));
+            
+//            threads.push_back(thread([&done, id, &stk, &crook_result](){
+                double sTime = CycleTimer::currentSeconds();
+                //        threads.push_back(thread([&done, &vec, id, &crook_result](){
+                //            int threadWorkload = (int)vec.size()/Thread_num;
+                //            stack<pair<int, Board>> stk;
+                //            for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
+                //                stk.push(vec[ii]);
+                //            }
+            
+            
+            
+                while (!done) {
+                    cnt++;
+                    mtx.lock();
+                    if (stk.size()) {
+                        int index = stk.top().first;
+                        Board b = stk.top().second;
+                        stk.pop();
+                        mtx.unlock();
+                        if (b.getTotalUnfilledCellsNum() == 0) {
+                            crook_result = b;
+                            done = true;
+                            break;
+                        }
+                        backtrackingUtil(stk, b, index, DEPTH, false);
                     }
-                    backtrackingUtil(stk, b, index, DEPTH, false);
+                    else mtx.unlock();
                 }
-                else mtx.unlock();
-            }
-        }));
+                cout << CycleTimer::currentSeconds() - sTime << endl;
+//            }));
+
         }
     }
-    double eTime = CycleTimer::currentSeconds();
-    cout << eTime - sTime << endl;
-    for (auto& thread:threads)
+    
+    for (auto& thread:threads) {
         thread.join();
-    eTime = CycleTimer::currentSeconds();
-    cout << eTime - sTime << endl;
+
+    }
+//    eTime = CycleTimer::currentSeconds();
+//    cout << eTime - sTime << endl;
     
     //    cout << cnt;
 }
@@ -562,19 +604,19 @@ void backtracking(Board &crook_result) {
 //void backtracking(Board &crook_result) {
 //    //    stack<pair<int, Board>> stk;
 //    vector<pair<int, Board>> vec;
-//    
+//
 //    Board tmp(crook_result);
-//    
+//
 //    bool done = false;
 //    //    stk.push(pair<int, Board>(findNextEmptyCellIndex(tmp.board, 0), tmp));
 //    double sTime = CycleTimer::currentSeconds();
 //    vector<thread> threads;
-//    
-//    
+//
+//
 //    int index = findNextEmptyCellIndex(tmp.board, 0);
 //    backtrackingUtil(vec, tmp, index, DEPTH);
-//    
-//    
+//
+//
 //    for (int id = 0; id < Thread_num; id++) {
 //        //        threads.push_back(thread([&done, &stk, &crook_result](){
 //        threads.push_back(thread([&done, &vec, id, &crook_result](){
@@ -583,7 +625,7 @@ void backtracking(Board &crook_result) {
 //            for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
 //                stk.push(vec[ii]);
 //            }
-//            
+//
 //            while (!done) {
 //                cnt++;
 //                mtx.lock();
@@ -609,7 +651,7 @@ void backtracking(Board &crook_result) {
 //        thread.join();
 //    eTime = CycleTimer::currentSeconds();
 //    cout << eTime - sTime << endl;
-//    
+//
 //    //    cout << cnt;
 //}
 
@@ -619,8 +661,8 @@ int main(int numArgs, char* args[]) {
     double crook_time = 0.0;
     
     if (numArgs < 2) {
-        DEPTH = 15;
-        Thread_num = 16;
+        DEPTH = 5;
+        Thread_num = 10;
     }
     else {
         DEPTH = atoi(args[1]);
