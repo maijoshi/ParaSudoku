@@ -6,7 +6,7 @@
 #include "parallelsudoku.cuh"
 #include "../CycleTimer.h"
 #define UPDIV(n, d) (((n)+(d)-1)/(d))
-const int threadsPerBlock = 512;
+const int threadsPerBlock = 1024;
 // trying filling one cell at first
 // still use Board?
 __device__
@@ -53,7 +53,7 @@ int findNextEmptyCellIndex(int matrix[size*size], int start) {
 
 // each thread work on a board in the frontier
 __global__
-void SolvingKernel(int* boards, int boardCnt, int* solution, int numThreads, int *test) {
+void SolvingKernel(int* boards, int boardCnt, int* solution, int numThreads) {
     int tidx = blockIdx.x * blockDim.x + threadIdx.x;
     int localBoard[size*size];
     for (int idx = tidx; idx < boardCnt; idx += numThreads) {
@@ -76,7 +76,6 @@ void SolvingKernel(int* boards, int boardCnt, int* solution, int numThreads, int
 
             if (noConflicts(localBoard, row, col, localBoard[next])) {
                 depth++;
-                *test = emptyCnt;
             }
             else if (localBoard[next] >= size) {
                 localBoard[next] = 0;
@@ -99,7 +98,7 @@ void SolvingKernel(int* boards, int boardCnt, int* solution, int numThreads, int
 
 
 __global__
-void BoardGenerationKernel(int* prev_boards, int* board_num, int prev_board_num, int* new_boards, int numThreads, char* test) {
+void BoardGenerationKernel(int* prev_boards, int* board_num, int prev_board_num, int* new_boards, int numThreads) {
     int tidx = blockIdx.x * blockDim.x + threadIdx.x;
     
     int* localBoard = (int*) malloc(sizeof(int)*size*size);
@@ -126,45 +125,42 @@ void BoardGenerationKernel(int* prev_boards, int* board_num, int prev_board_num,
                     new_boards[size*size*offset+ii] = localBoard[ii];
                 }
             }
-            else {
-                // *(test+1) = k;
-                *test = emptyIdx;
-                // sprintf(test, "emptyIdx=%d", emptyIdx);
-            }
+            // else {
+            //     // *(test+1) = k;
+            //     *test = emptyIdx;
+            //     // sprintf(test, "emptyIdx=%d", emptyIdx);
+            // }
         }
     }
 
 }
 
 void 
-BoardGenerator(int* prev_boards, int* prev_board_num, int* new_boards, int memSize, char* test) {
+BoardGenerator(int* prev_boards, int* prev_board_num, int* new_boards, int memSize) {
     // int block = UPDIV(1, threadsPerBlock);
     int i;
     int num = 1;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 10; i++) {
         int block = UPDIV(num, threadsPerBlock);
         cudaMemset(prev_board_num, 0, sizeof(int));
-        // if (i%2 == 0) 
-            BoardGenerationKernel<<<block, threadsPerBlock>>>(prev_boards, prev_board_num, num, new_boards, block*threadsPerBlock, test);
-        // else BoardGenerationKernel<<<block, threadsPerBlock>>>(new_boards, prev_board_num, num, prev_boards, block*threadsPerBlock, test);
-        int* tmp = prev_boards;
-        // cudaDeviceSynchronize();
-        prev_boards = new_boards;
-        new_boards = tmp;
+        if (i%2 == 0) 
+            BoardGenerationKernel<<<block, threadsPerBlock>>>(prev_boards, prev_board_num, num, new_boards, block*threadsPerBlock);
+        else BoardGenerationKernel<<<block, threadsPerBlock>>>(new_boards, prev_board_num, num, prev_boards, block*threadsPerBlock);
+        // int* tmp = prev_boards;
+        // prev_boards = new_boards;
+        // new_boards = tmp;
         cudaMemcpy(&num, prev_board_num, sizeof(int), cudaMemcpyDeviceToHost);
-        // char* host_test=(char*)malloc(100000);
         // cudaMemcpy(host_test, test, sizeof(int), cudaMemcpyDeviceToHost);
-        printf("total boards after an iteration %d: %d\n", i, num);
-
+        cout << "iter " << i << ", board number=" << num << endl;
     }
-    // if (i % 2) new_boards = prev_boards;
+    if (i % 2) new_boards = prev_boards;
 }
 void 
-cudaSudokuSolver(int* boards, int board_num, int* solution, int* test) {
+cudaSudokuSolver(int* boards, int board_num, int* solution) {
     int block = UPDIV(board_num, threadsPerBlock);
     cout << "board_num=" << board_num << endl;
     double stime = CycleTimer::currentSeconds();
-    SolvingKernel<<<block, threadsPerBlock>>>(boards, board_num, solution, block*threadsPerBlock, test);
+    SolvingKernel<<<block, threadsPerBlock>>>(boards, board_num, solution, block*threadsPerBlock);
     cudaDeviceSynchronize();
     cout << CycleTimer::currentSeconds() - stime << endl;
 }
