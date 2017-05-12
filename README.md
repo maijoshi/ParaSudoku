@@ -17,6 +17,9 @@ Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are b
 
 ![Solved Sudoku](Solved_Sudoku.png)
 
+![A cute kitten](http://placekitten.com/200/300?style=centerme)
+
+
 
 ## Challenges
 
