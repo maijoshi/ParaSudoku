@@ -5,9 +5,9 @@
 
 using namespace std;
 
-#define ROW_NUM 9//4
-#define COL_NUM 9//4
-#define BLOCK_SIZE 2
+#define ROW_NUM 16
+#define COL_NUM 16
+#define BLOCK_SIZE 4
 #define MAX_ITER 1
 
 int cnt = 0;
@@ -36,6 +36,7 @@ bool noConflicts(int matrix[ROW_NUM][COL_NUM], int row, int col, int num) {
 
 bool sudokuSolver(int matrix[ROW_NUM][COL_NUM], int row, int col) {
 	cnt++;
+        cout << row << ", " << col << endl;
 	if (row >= ROW_NUM || col >= COL_NUM) 
 		return true;
 
