@@ -19,8 +19,8 @@
 #define BOX 2
 using namespace std;
 
-const int size = 25;
-const int box_size = 5;
+const int size = 9;
+const int box_size = 3;
 
 class Board {
 public:

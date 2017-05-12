@@ -17,9 +17,6 @@
 #include "CycleTimer.h"
 #include "pthread.h"
 #include "Board.hpp"
-#include <iostream>
-#include <fstream>
-
 
 #define NDEBUG
 #define MAX_ITER 1000

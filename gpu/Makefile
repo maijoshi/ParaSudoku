@@ -16,7 +16,7 @@ LOGS	   := logs
 ###########################################################
 
 OBJDIR=objs
-CXX=g++ -std=c++11 -m64
+CXX=g++ -I/usr/local/cuda/include -std=c++11 -m64
 CXXFLAGS=-O3 -Wall
 LDFLAGS=-L/usr/local/cuda/lib64/ -lcudart
 NVCC=nvcc
