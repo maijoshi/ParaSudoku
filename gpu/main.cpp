@@ -30,12 +30,12 @@ int main(int argc, char* argv[]) {
     int *old_boards;
     int *solution;
     int *board_num;
-    // bool* solved;
     int host_solution[boardSize*boardSize];
     int DEPTH = 5;
     int *test;
+    char *c;
 
-    const int memSize = pow(9, DEPTH);
+    const int memSize = 81*pow(9, DEPTH);
     cout << memSize << endl;
 
     cudaMalloc(&new_boards, memSize * sizeof(int));
@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
     cudaMalloc(&solution, boardSize * boardSize * sizeof(int));
     cudaMalloc(&board_num, sizeof(int));
     cudaMalloc(&test, sizeof(int));
+    cudaMalloc(&c, sizeof(char)*100000);
 int *host_new_boards=(int*)malloc(memSize*sizeof(int));
 
     // // initialize memory
@@ -54,23 +55,28 @@ int *host_new_boards=(int*)malloc(memSize*sizeof(int));
     // // copy the initial board to the old boards
     cudaMemcpy(old_boards, board, boardSize * boardSize * sizeof(int), cudaMemcpyHostToDevice);
 
-    BoardGenerator(old_boards, board_num, new_boards);
+    BoardGenerator(old_boards, board_num, new_boards, memSize, c);
     int host_board_num = 1;
     cudaMemcpy(&host_board_num, board_num, sizeof(int), cudaMemcpyDeviceToHost);
-    // cout << host_board_num << endl;
+    cout << host_board_num << endl;
     cudaMemcpy(host_new_boards, new_boards, host_board_num*boardSize*boardSize*sizeof(int), cudaMemcpyDeviceToHost);
- //    for (int ii = 0; ii < host_board_num; ii++) {
-	//     for (int i = 0; i < boardSize; i++) {
-	//         for (int j = 0; j < boardSize; j++)
-	//             cout << host_new_boards[ii*boardSize*boardSize+i*boardSize+j] << " ";
-	//         	cout << endl;
-	//     }
-	// }
+    ofstream outputFile;
+    outputFile.open("output_cuda");
+    for (int ii = 0; ii < host_board_num; ii++) {
+	    for (int i = 0; i < boardSize; i++) {
+	        for (int j = 0; j < boardSize; j++) {
+	        	// cout << ii << " " << ii*boardSize*boardSize+i*boardSize+j << endl;
+	        	if (ii*boardSize*boardSize+i*boardSize+j < host_board_num*boardSize*boardSize)
+	            outputFile << host_new_boards[ii*boardSize*boardSize+i*boardSize+j] << " ";
+	        }
+	        outputFile << endl;
+	    }
+	    outputFile << endl;
+	}
 
     cudaSudokuSolver(new_boards, host_board_num, solution, test);
     memset(host_solution, 0, boardSize*boardSize * sizeof(int));
     cudaMemcpy(host_solution, solution, boardSize*boardSize*sizeof(int), cudaMemcpyDeviceToHost);
-    // bool b;
     int t;
     cudaMemcpy(&t, test, sizeof(int), cudaMemcpyDeviceToHost);
     cout << "depth=" << t << endl;
