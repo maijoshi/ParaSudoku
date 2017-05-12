@@ -10,7 +10,7 @@
 #include <algorithm>
 
 bool Board::elimination() {
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++) {
             int m = 0;
@@ -44,7 +44,7 @@ bool Board::loneRangers() {
                 // found lone ranger
                 setBoardVal(i, col, k);
 #ifndef NDEBUG
-                cout << "lone ranger - checked row:" << endl;
+                //cout << "lone ranger - checked row:" << endl;
                 printMarkup();
 #endif
                 return true;
@@ -68,7 +68,7 @@ bool Board::loneRangers() {
                 // found lone ranger
                 setBoardVal(row, j, k);
 #ifndef NDEBUG
-                cout << "lone ranger - checked col:" << endl;
+                //cout << "lone ranger - checked col:" << endl;
                 printMarkup();
 #endif
                 return true;
@@ -131,10 +131,10 @@ bool Board::findPreemptiveSet(int setSize) {
             if (cnt == setSize) {
                 // found preemptive set
 #ifndef NDEBUG
-                cout << "pset found: row=" << row << " ";
-                for (int in: indexes[i])
-                    cout << unfilled[in] << " ";
-                cout << endl;
+                //cout << "pset found: row=" << row << " ";
+                //for (int in: indexes[i])
+                //    cout << unfilled[in] << " ";
+                //cout << endl;
 #endif
                 vector<int> pset;
                 bool b = false;
@@ -173,10 +173,10 @@ bool Board::findPreemptiveSet(int setSize) {
                     // found preemptive set
                     
 #ifndef NDEBUG
-                    cout << "pset found: col=" << col << " ";
-                    for (int in: indexes[i])
-                        cout << unfilled[in] << " ";
-                    cout << endl;
+                    //cout << "pset found: col=" << col << " ";
+                    //for (int in: indexes[i])
+                    //    cout << unfilled[in] << " ";
+                    //cout << endl;
 #endif
                     vector<int> pset;
                     bool b = false;

@@ -23,6 +23,17 @@ bool noConflicts(int matrix[size * size], int row, int col, int num) {
         }
     }
     
+    for (int i = 0; i < box_size; i++) {
+        for (int j = 0; j < box_size; j++) {
+            int mat_row = (row/box_size)*box_size + i;
+            int mat_col = (col/box_size)*box_size + j;
+            if (mat_row == row && mat_col == col)   continue;
+            if (matrix[mat_row * size + mat_col] == num) {
+                // cout << "box conflict: i=" << i <<"j="<<j<< endl;
+                return false;
+            }
+        }
+    }
     // for (int i = 0; i < box_size; i++) {
     //     for (int j = 0; j < box_size; j++) {
     //         if (i == row && j == col)   continue;

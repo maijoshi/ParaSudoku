@@ -19,7 +19,7 @@
 #include "Board.hpp"
 
 #define NDEBUG
-#define MAX_ITER 1000
+#define MAX_ITER 1
 using namespace std;
 
 
@@ -149,11 +149,11 @@ void backtracking(Board &crook_result) {
     if (multiStack) backtrackingUtil(queue, tmp, index, DEPTH);
     
     double eTime = CycleTimer::currentSeconds();
-    cout << eTime - startTime << endl;
+    //cout << eTime - startTime << endl;
     for (int id = 0; id < Thread_num; id++) {
         if (multiStack) {
             //            threads.push_back(thread([&done, &queue, id, &crook_result](){
-#pragma omp parallel
+//#pragma omp parallel
             {
                 double sTime = CycleTimer::currentSeconds();
                 int threadWorkload = (int)queue.size()/Thread_num;
@@ -184,7 +184,7 @@ void backtracking(Board &crook_result) {
                     else break;
                 }
                 mtx.lock();
-                cout << CycleTimer::currentSeconds() - sTime << endl;
+                //cout << CycleTimer::currentSeconds() - sTime << endl;
                 mtx.unlock();
                 //            }));
             }
@@ -247,7 +247,7 @@ void backtracking(Board &crook_result) {
                 }
                 else mtx.unlock();
             }
-            cout << CycleTimer::currentSeconds() - sTime << endl;
+            //cout << CycleTimer::currentSeconds() - sTime << endl;
             //            }));
             
         }
@@ -363,7 +363,7 @@ int main(int numArgs, char* args[]) {
             myfile >> bb.board[i][j];
         }
     }
-    bb.printBoard();
+    //bb.printBoard();
     
     double minTime = 10.0;
     int minThreads = 1;
@@ -386,15 +386,15 @@ int main(int numArgs, char* args[]) {
             if (done) break;
             change = false;
 #ifndef NDEBUG
-            cout << "after elimination: " << done << endl;
-            b.printBoard();
-            b.printMarkup();
+            //cout << "after elimination: " << done << endl;
+            //b.printBoard();
+            //b.printMarkup();
 #endif
             // step 2: lone ranger
             if (b.loneRangers()) { // if any changes made, back to step 1
 #ifndef NDEBUG
-                cout << "after lone ranger search: " << endl;
-                b.printBoard();
+                //cout << "after lone ranger search: " << endl;
+                //b.printBoard();
 #endif
                 continue;
             }
@@ -404,9 +404,9 @@ int main(int numArgs, char* args[]) {
             for (int i = 2; i < size; i++) {
                 if (b.findPreemptiveSet(i)) { // if any changes made, back to step 1
 #ifndef NDEBUG
-                    cout << "after findPreemptiveSet " << i << ": " << endl;
-                    b.printMarkup();
-                    b.printBoard();
+                    //cout << "after findPreemptiveSet " << i << ": " << endl;
+                    //b.printMarkup();
+                    //b.printBoard();
 #endif
                     change = true;
                     break;
