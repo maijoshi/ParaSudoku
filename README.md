@@ -13,9 +13,8 @@ We implemented two sequential and three parallel sudoku solvers. We used a brute
 
 Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are broken down into 9 3x3 subboxes. The goal of the game is to play the numbers 1-9 in the cells such that no row, column, or box contains the same number twice.
 
-<p align="center">
-![Sudoku](Sudoku.png)
-</p>
+![Sudoku](Sudoku.pngstyle=centerme)
+
 ![Solved Sudoku](Solved_Sudoku.png)
 
 
