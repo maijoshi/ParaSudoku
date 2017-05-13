@@ -94,6 +94,14 @@ We used the following algorithm to create a parallelized sudoku solver on the GP
 
 2) Try to solve each of these Y boards separately on different threads on the GPU. If a solution is found, terminate and return the solution.
 
+### 4.3 Future Approaches
+
+The following are some approaches that we began implementing but were unable to finish in time for this deadline:
+
+1) Work stealing for local stack version of Parallelized Crook's Algorithm
+
+2) Solving sudoku puzzles using Constraint Propagation and Search
+
 
 ## 5 Results
 
