@@ -55,7 +55,11 @@ Our implementation of Crook's Algorithm tries each of the aforementioned methods
 
 ![Crook's Algorithm](Crook_Algorithm.png)
 
-After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took. 
+After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took, thus slowing down the entire Crook's Algorithm. In order to make the backtracking portion more efficient, we parallelized the backtracking section in two different ways:
+
+#### Version 1: Global Stack
+
+#### Version 2: Local Stack
 
 ## Results
 
