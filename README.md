@@ -53,7 +53,7 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. The following chart visualizes this process: 
 
-
+![Crook's Algorithm](Crook's Algorithm.png)
 
 ## Results
 
