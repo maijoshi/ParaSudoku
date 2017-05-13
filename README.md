@@ -82,6 +82,10 @@ In the second version, we had each thread push and pull boards from its own loca
     1. Fill in D spots of board.
     2. Push back all valid boards to its local stack.
     3. Pull another board and repeat the process of filling in the next D spots.
+    
+Since each thread was pushing and pulling from its own stack, there was no contention between threads since they weren't modifying any common resource. One potential drawback of this method was the work imbalance problem: one thread could be stuck with a lot of work in its own stack while the other threads were waiting idly since they had finished all of their work in their respective stacks. This potential issue could have been solved by implementing work stealing but we were unfortunately unable to implement this due to time constraints.
+
+### Cuda Sudoku Solver
 
 ## Results
 
