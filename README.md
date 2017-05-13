@@ -59,6 +59,12 @@ After developing and running Crook's algorithm, we noticed that the most time-in
 
 #### Version 1: Global Stack
 
+In the first version, the parallelized portion of the backtracking portion works as follows:
+
+1. Create X threads and send each thread a different starting board and a common global stack.
+2. For each thread:
+    1. Have
+
 #### Version 2: Local Stack
 
 ## Results
