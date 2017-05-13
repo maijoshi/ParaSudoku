@@ -28,6 +28,16 @@ There are several challenges associated with solving sudoku puzzles in parallel.
 Within our project, we implemented two sequential algorithms for our baseline: a brute-force, backtracking algorithm and Crook's algorithm.
 
 #### Brute-Force Algorithm
+We implemented the following steps in our algorithm:
+Choose starting point
+While (problem not solved):
+	For each path from starting point:
+		If selected path has no conflicts:
+			Select path and make recursive call to rest of problem
+			If (recursive problem returns true):
+				Return true
+			Else:
+				Return false
 
 ## Approaches
 
