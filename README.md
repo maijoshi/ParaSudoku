@@ -156,3 +156,16 @@ Here are the results:
 [Parallel Depth-First Sudoku Solver Algorithm](https://alitarhini.wordpress.com/2011/04/06/parallel-depth-first-sudoku-solver-algorithm/)
 
 [Parallel Sudoku on the GPU](https://github.com/vduan/parallel-sudoku-solver)
+
+## 7. Work By Each Student
+Maitreyee:
+- sequential brute force algorithm
+- evaluation of parallelized implementation
+- parallelization of backtracking part
+- writeup and presentation slides
+
+Tingyu:
+- sequential crook algorithm
+- GPU accelerated version implementation and evaluation
+- parallelization of backtracking part
+- writeup and presentation slides
