@@ -18,6 +18,8 @@ Below are examples of a sudoku puzzle (top) and its solution (bottom):
 {% include image.html url="images/Sudoku.png" description="Figure 1" %}
 {% include image.html url="images/Solved_Sudoku.png" description="Figure 2" %}
 
+Using a brute force backtracing algorithm to solve Sudoku, the key data structure here is the stack we push boards into. Each iteration a new board is popped from the stack, try all the possibilities of next empty cell, and push those possible boards back into the stack.
+
 ### 3.1 Challenges
 
 There are several challenges associated with solving sudoku puzzles in parallel. Solving sudoku puzzles is an NP-complete problem, with ove 6.67 x 10^21 distinct solutions for the 9x9 board, thus making Sudoku a complex problem to solve. Furthermore, each cell depends on the corresponding values in its row, column, and subbox. Since each cell is dependent on so many other cells, there is no straightforward to parallelize solving Sudoku.
