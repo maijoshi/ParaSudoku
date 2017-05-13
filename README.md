@@ -7,7 +7,7 @@ On Saturday, May 6th, we changed our project from ScanNet: Video Analysis on MXN
 
 ## Summary
 
-We implemented two sequential and three parallel sudoku solvers. We used a brute-force, backtracking algorithm and Crook's Algorithm to implement the two sequential sudoku solvers. We then parallelized the brute-force backtracking algorithm using Cuda and running multiple threads on the GPU. We parallelized Crook's Algorithm in two ways: 
+We implemented two sequential and three parallel sudoku solvers. We used a brute-force, backtracking algorithm and Crook's Algorithm to implement the two sequential sudoku solvers. We parallelized Crook's Algorithm in two ways: using a global stack and using local stacks. We then parallelized the backtracking algorithm using Cuda and it on the GPU. When run on the GHC machines with 16 threads, we were able to achieve 8x speedup with Crook's algorithm with global stacks, 22x speedup with Crook's algorithm with local stacks, and 20x speedup for the Cuda Sudoku Solver.
 
 ## Background
 
@@ -87,6 +87,15 @@ Since each thread was pushing and pulling from its own stack, there was no conte
 
 ### Cuda Sudoku Solver
 
+In order to parallelize the brute-force, backtracking algorithm, we decided to use Cuda and run it on the GPU for better performance. However, since Cuda doesn't support recursive functions well, we implemented the sudoku solver with an interative function instead with a int array as the "stack."
+
+We used the following algorithm to create a parallelized sudoku solver on the GPU:
+
+1) Breadth first search from starting board to find all possible boards with the first few empty spots filled. This will return Y new possible boards for the algorithm to explore.
+
+2) Try to solve each of these Y boards separately on different threads on the GPU. If a solution is found, terminate and return the solution.
+
+
 ## Results
 
 ### Parallelized Crook's Algorithm
@@ -113,9 +122,25 @@ These results indicate that many of our hypothesis were correct:
 
 2) The charts of D at 5, 10, and 15 further confirm this hypothesis that the global stack algorithm is facing issues with runtime and thus has longer runtimes. In each of these graphs, the global stack algorithm is still slower than the local stack algorithm but differences in runtime between them are narrowing. We suspect that since the work that each thread does in between pushing and popping from the global stack is increasing, the contention in between threads to modify the global stack is decreasing. Thus, there is a corresponding decrease in runtime for the global stack algorithm.
 
+3) When D = 20, the performances of the global stack algorithm and local stack algorithm are roughly equal. Furthermore, the runtime of the global stack algorithm actually decreases now with the increase in the number of threads used. We believe that this is because there is significant enough work for each thread to do that its beneficial for this work to be split up and there are fewer times that each thread is trying to access the global stack.
 
+4) When D = 25, the global stack algorithm performs better than the local stack algorithm. We suspect that this is due to the work imbalance problem that the local stack algorithm faces, where one thread is doing all the work while others are waiting idly by. This problem could be mitigated by work stealing.
 
+### Cuda Sudoku Solver
 
+We evaluated the Cuda Sudoku Solver on a 9x9 expert-level problem. When we compared the GPU version to the CPU local stack version and the CPU global stack version, we found speedups of 20x and 3x respectively. 
 
+Here are the results:
+
+| Implementation | Running Time |
+ | -- | -- |
+| GPU version | 60ms |
+| CPU local stack version | 200ms |
+| CPU global stack version | 1290ms |
 
 ## References
+[Crook's Algorithm Paper](http://www.ams.org/notices/200904/tx090400460p.pdf)
+
+[Parallelized Sudoku Solving Using OpenMP](http://www.cse.buffalo.edu/faculty/miller/Courses/CSE633/Sankar-Spring-2014-CSE633.pdf)
+
+[Parallel Sudoku on the GPU](https://github.com/vduan/parallel-sudoku-solver)
