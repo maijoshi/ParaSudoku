@@ -62,8 +62,10 @@ After developing and running Crook's algorithm, we noticed that the most time-in
 In the first version, the parallelized portion of the backtracking portion works as follows:
 
 1. Create X threads and send each thread a different starting board and a common global stack.
-2. For each thread:
-    1. Have
+2. Each of the X threads should then:
+    1. Fill in D spots of board.
+    2. Push back all valid boards to the global stack.
+    3. Pull another board and repeat the process of filling in the next D spots.
 
 #### Version 2: Local Stack
 
