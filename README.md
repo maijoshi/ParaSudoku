@@ -128,6 +128,11 @@ These results indicate that many of our hypothesis were correct:
 
 ### Cuda Sudoku Solver
 
+We evaluated the Cuda Sudoku Solver on a 9x9 expert-level problem. When we compared the GPU version to the CPU local stack version and the CPU global stack version, we found speedups of 20x and 3x respectively. 
 
+Here are the results:
+
+| Implementation | Running Time |
+ | -- | -- |
 
 ## References
