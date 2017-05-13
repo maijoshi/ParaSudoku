@@ -53,7 +53,7 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
 
-![Crook's Algorithm =250px](Crook_Algorithm.png)
+![Crook's Algorithm](Crook_Algorithm.png)
 
 After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took, thus slowing down the entire Crook's Algorithm. In order to make the backtracking portion more efficient, we parallelized the backtracking section in two different ways:
 
@@ -91,6 +91,10 @@ Since each thread was pushing and pulling from its own stack, there was no conte
 
 ### Parallelized Crook's Algorithm
 
-We measured speedup on expert-level 9x9 suddoku boards. We evaluated the performances of the two versions of the parallelized Crook's algorithm by measuring their respective runtimes as we varied the values of X (the number of threads) and D (the number of spots that a thread would fill before pushing the valid boards back to the stack). We varied the value of X used by the solver from 1 to 25. We measured the impact of changing D at 4 different values: 1, 5, 10, 15, 20, and 25. We have included 
+We measured speedup on expert-level 9x9 suddoku boards. We evaluated the performances of the two versions of the parallelized Crook's algorithm by measuring their respective runtimes as we varied the values of X (the number of threads) and D (the number of spots that a thread would fill before pushing the valid boards back to the stack). We varied the value of X used by the solver from 1 to 25. We measured the impact of changing D at 4 different values: 1, 5, 10, 15, 20, and 25. 
+
+Here are the results:
+
+
 
 ## References
