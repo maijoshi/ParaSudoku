@@ -51,9 +51,11 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 ### Parallelizing Crook's Algorithm
 
-Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. The following chart visualizes this process: 
+Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
 
 ![Crook's Algorithm](Crook_Algorithm.png)
+
+After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took. 
 
 ## Results
 
