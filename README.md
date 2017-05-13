@@ -143,4 +143,6 @@ Here are the results:
 
 [Parallelized Sudoku Solving Using OpenMP](http://www.cse.buffalo.edu/faculty/miller/Courses/CSE633/Sankar-Spring-2014-CSE633.pdf)
 
+[Sudoku Solver](http://www.andrew.cmu.edu/user/kkuan/finalWriteup.html)
+
 [Parallel Sudoku on the GPU](https://github.com/vduan/parallel-sudoku-solver)
