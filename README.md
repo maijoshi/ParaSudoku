@@ -33,9 +33,7 @@ We implemented the following steps in our algorithm:
 Choose starting point
 
 While (problem not solved):
-
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For each path from starting point:
-
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If selected path has no conflicts:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select path and make recursive call to rest of problem
