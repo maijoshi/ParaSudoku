@@ -145,4 +145,6 @@ Here are the results:
 
 [Sudoku Solver](http://www.andrew.cmu.edu/user/kkuan/finalWriteup.html)
 
+[Parallel Depth-First Sudoku Solver Algorithm](https://alitarhini.wordpress.com/2011/04/06/parallel-depth-first-sudoku-solver-algorithm/)
+
 [Parallel Sudoku on the GPU](https://github.com/vduan/parallel-sudoku-solver)
