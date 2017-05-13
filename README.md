@@ -139,3 +139,4 @@ Here are the results:
 | CPU global stack version | 1290ms |
 
 ## References
+[Crook's Algorithm Paper](http://www.ams.org/notices/200904/tx090400460p.pdf)
