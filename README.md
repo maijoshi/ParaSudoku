@@ -15,8 +15,8 @@ Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are b
 
 Below are examples of a sudoku puzzle (top) and its solution (bottom):
 
-{% include image.html url="Sudoku.png" description="Figure 1" %}
-![Solved Sudoku](Solved_Sudoku.png)
+{% include image.html url="images/Sudoku.png" description="Figure 1" %}
+{% include image.html url="images/Solved_Sudoku.png" description="Figure 2" %}
 
 ### 3.1 Challenges
 
@@ -52,7 +52,7 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
 
-![Crook's Algorithm](Crook_Algorithm.png)
+{% include image.html url="images/Crook_Algorithm.png" description="Figure 3" %}
 
 After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took, thus slowing down the entire Crook's Algorithm. In order to make the backtracking portion more efficient, we parallelized the backtracking section in two different ways:
 
@@ -103,17 +103,12 @@ We measured speedup on expert-level 9x9 suddoku boards. We evaluated the perform
 
 Here are the results:
 
-![D1](D1.png)
-
-![D5](D5.png)
-
-![D10](D10.png)
-
-![D15](D15.png)
-
-![D20](D20.png)
-
-![D25](D25.png)
+{% include image.html url="images/D1.png" description="Figure 4" %}
+{% include image.html url="images/D5.png" description="Figure 5" %}
+{% include image.html url="images/D10.png" description="Figure 6" %}
+{% include image.html url="images/D15.png" description="Figure 7" %}
+{% include image.html url="images/D20.png" description="Figure 8" %}
+{% include image.html url="images/D25.png" description="Figure 9" %}
 
 These results indicate that many of our hypothesis were correct:
 
