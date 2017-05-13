@@ -30,6 +30,7 @@ Within our project, we implemented two sequential algorithms for our baseline: a
 #### Brute-Force Algorithm
 We implemented the following steps in our algorithm:
 
+[Brute Force Algorithm](Brute_Force_Algorithm.png)
 
 ## Approaches
 
