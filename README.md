@@ -1,15 +1,15 @@
 # ParaSudoku
 Maitreyee Joshi(maitreyj@andrew.cmu.edu), Tingyu Bi(tbi@andrew.cmu.edu)
 
-## 1 Reader's Note
+## 1. Reader's Note
 
 On Saturday, May 6th, we changed our project from ScanNet: Video Analysis on MXNet to ParaSudoku. We were facing several issues configuring, understanding, and defining our evaluation criteria for both MXNet and Scanner. Due to the time constraints that we were facing, we decided to refocus our efforts on parallelizing algorithms that we could code from scratch. The proposal and checkpoint for our previous project are located [here](https://sophie4869.github.io/ScanNet/).
 
-## 2 Summary
+## 2. Summary
 
 We implemented two sequential and three parallel sudoku solvers. We used a brute-force, backtracking algorithm and Crook's Algorithm to implement the two sequential sudoku solvers. We parallelized Crook's Algorithm in two ways: using a global stack and using local stacks. We then parallelized the backtracking algorithm using Cuda and it on the GPU. When run on the GHC machines with 16 threads, we were able to achieve 8x speedup with Crook's algorithm with global stacks, 22x speedup with Crook's algorithm with local stacks, and 20x speedup for the Cuda Sudoku Solver.
 
-## 3 Background
+## 3. Background
 
 Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are broken down into 9 3x3 subboxes. The goal of the game is to place the numbers 1-9 into the cells such that no other cells in the same row, column, or box contain the same number.
 
@@ -26,7 +26,7 @@ There are several challenges associated with solving sudoku puzzles in parallel.
 
 Within our project, we implemented two sequential algorithms for our baseline: a brute-force, backtracking algorithm and Crook's algorithm.
 
-#### Backtracking Algorithm
+#### 3.2.1 Backtracking Algorithm
 We implemented the following steps in our algorithm:
 ```
 Choose starting point
@@ -40,15 +40,15 @@ While (problem not solved):
 				Return false
 ```
 
-#### Crook's Algorithm
+#### 3.2.2 Crook's Algorithm
 Crook's algorithm describes the following few methods to determinisically solve cells in sudoku puzzles. We used the following three methods in our implementation: 
 1. *Elimination*: A cell has only one value left.
 2. *Lone Ranger*: In a row, column, or block, a value fits into only one cell.
 3. *Preemptive Set*: In a row, column, or block, a set of m values are contained within m cells.
 
-## Approaches
+## 4. Approaches
 
-### Parallelized Crook's Algorithm
+### 4.1 Parallelized Crook's Algorithm
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
 
@@ -56,7 +56,7 @@ Our implementation of Crook's Algorithm tries each of the aforementioned methods
 
 After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took, thus slowing down the entire Crook's Algorithm. In order to make the backtracking portion more efficient, we parallelized the backtracking section in two different ways:
 
-#### Version 1: Global Stack
+#### 4.2.1 Version 1: Global Stack
 
 In the first version, the parallelized portion of the backtracking portion works as follows:
 
@@ -72,7 +72,7 @@ We played around with the value of D instead of simply setting D = 1 in order to
 
 Based on our hypothesis that the threads would be contending for the locks on the global stack often, we decided to implement a second version of a parallelized backtracking portion in Crook's Algorithm.
 
-#### Version 2: Local Stack
+#### 4.2.2 Version 2: Local Stack
 
 In the second version, we had each thread push and pull boards from its own local stack instead of the common global stack. The parallelized portion of the backtracking portion works as follows:
 
@@ -84,7 +84,7 @@ In the second version, we had each thread push and pull boards from its own loca
     
 Since each thread was pushing and pulling from its own stack, there was no contention between threads since they weren't modifying any common resource. One potential drawback of this method was the work imbalance problem: one thread could be stuck with a lot of work in its own stack while the other threads were waiting idly since they had finished all of their work in their respective stacks. This potential issue could have been solved by implementing work stealing but we were unfortunately unable to implement this due to time constraints.
 
-### Cuda Sudoku Solver
+### 4.3 Cuda Sudoku Solver
 
 In order to parallelize the brute-force, backtracking algorithm, we decided to use Cuda and run it on the GPU for better performance. However, since Cuda doesn't support recursive functions well, we implemented the sudoku solver with an interative function instead with a int array as the "stack."
 
@@ -95,9 +95,9 @@ We used the following algorithm to create a parallelized sudoku solver on the GP
 2) Try to solve each of these Y boards separately on different threads on the GPU. If a solution is found, terminate and return the solution.
 
 
-## Results
+## 5 Results
 
-### Parallelized Crook's Algorithm
+### 5.1 Parallelized Crook's Algorithm
 
 We measured speedup on expert-level 9x9 suddoku boards. We evaluated the performances of the two versions of the parallelized Crook's algorithm by measuring their respective runtimes as we varied the values of X (the number of threads) and D (the number of spots that a thread would fill before pushing the valid boards back to the stack). We varied the value of X used by the solver from 1 to 25. We measured the impact of changing D at 4 different values: 1, 5, 10, 15, 20, and 25. 
 
@@ -125,7 +125,7 @@ These results indicate that many of our hypothesis were correct:
 
 4) When D = 25, the global stack algorithm performs better than the local stack algorithm. We suspect that this is due to the work imbalance problem that the local stack algorithm faces, where one thread is doing all the work while others are waiting idly by. This problem could be mitigated by work stealing.
 
-### Cuda Sudoku Solver
+### 5.2 Cuda Sudoku Solver
 
 We evaluated the Cuda Sudoku Solver on a 9x9 expert-level problem. When we compared the GPU version to the CPU local stack version and the CPU global stack version, we found speedups of 20x and 3x respectively. 
 
@@ -137,7 +137,7 @@ Here are the results:
 | CPU local stack version | 200ms |
 | CPU global stack version | 1290ms |
 
-## References
+## 6. References
 [Crook's Algorithm Paper](http://www.ams.org/notices/200904/tx090400460p.pdf)
 
 [Parallelized Sudoku Solving Using OpenMP](http://www.cse.buffalo.edu/faculty/miller/Courses/CSE633/Sankar-Spring-2014-CSE633.pdf)
