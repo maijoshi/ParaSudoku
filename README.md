@@ -134,5 +134,8 @@ Here are the results:
 
 | Implementation | Running Time |
  | -- | -- |
+| GPU version | 60ms |
+| CPU local stack version | 200ms |
+| CPU global stack version | 1290ms |
 
 ## References
