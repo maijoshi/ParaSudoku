@@ -90,9 +90,9 @@ In order to parallelize the brute-force, backtracking algorithm, we decided to u
 
 We used the following algorithm to create a parallelized sudoku solver on the GPU:
 
-1) Breadth first search from starting board to find all possible boards with the first few empty spots filled. This will return Y new possible boards for the algorithm to explore.
+1) Breadth first search from starting board to find all possible boards with the first few empty spots filled. This will return new possible boards for the algorithm to explore.
 
-2) Try to solve each of these Y boards separately on different threads on the GPU. If a solution is found, terminate and return the solution.
+2) Try to solve each of these new boards separately on different threads on the GPU. If a solution is found, terminate and return the solution.
 
 
 ## 5 Results
