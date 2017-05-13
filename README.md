@@ -107,6 +107,9 @@ Here are the results:
 
 ![D25](D25.png)
 
+These results indicate that many of our hypothesis were correct:
+
+1) Looking at the chart for D = 1, the runtime of the algorithm with the global stack is significantly slower than the runtime of the algorithm with the local stack. The runtime of the global stack algorithm increases as the number of threads increase. We believe that this is due to contention. Since the threads are constantly popping and pushing boards after doing extremely minimal work (only filling in one cell), the increased number of threads in the global stack algorithm leads to increased contention and thus increased runtime. The local stack algorithm doesn't have this problem since it is modifying its own stack.
 
 
 
