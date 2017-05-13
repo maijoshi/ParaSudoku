@@ -136,7 +136,7 @@ These results indicate that many of our hypothesis were correct:
 
 ### 5.2 Cuda Sudoku Solver
 
-We evaluated the Cuda Sudoku Solver on a 9x9 expert-level problem. When we compared the GPU version to the CPU local stack version and the CPU global stack version, we found speedups of 20x and 3x respectively. 
+We evaluated the Cuda Sudoku Solver on a 9x9 expert-level problem. When we compared the GPU version to the CPU local stack version and the CPU global stack version, we found speedups of 20x and 3x respectively. Due to the fact that in step 1 the generation kernel only fills in one board for generation, this kernel is called multiple times and could lead to scheduling and synchronization overhead.
 
 Here are the results:
 
