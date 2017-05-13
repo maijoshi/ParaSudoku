@@ -162,10 +162,12 @@ Maitreyee:
 - sequential brute force algorithm
 - evaluation of parallelized implementation
 - parallelization of backtracking part
+- attempted approaches like constraint propagation and search; openMP in crook
 - writeup and presentation slides
 
 Tingyu:
 - sequential crook algorithm
-- GPU accelerated version implementation and evaluation
-- parallelization of backtracking part
+- GPU accelerated version implementation evaluation
+- evaluation of cuda solver
+- parallelization of backtracking part with global/local stacks
 - writeup and presentation slides
