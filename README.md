@@ -18,7 +18,7 @@ Below are examples of a sudoku puzzle (top) and its solution (bottom):
 {% include image.html url="images/Sudoku.png" description="Figure 1" %}
 {% include image.html url="images/Solved_Sudoku.png" description="Figure 2" %}
 
-Using a brute force backtracing algorithm to solve Sudoku, the key data structure here is the stack we push boards into. Each iteration a new board is popped from the stack, try all the possibilities of next empty cell, and push those possible boards back into the stack. In the Crook's algorithm, if by elimination, finding lone rangers and preemptive sets cannot solve the problem, the backtracking will take over and solve the board we have discovered so far. It turns out the brute force part dominates the running time, and we focus on parallelizing backtracking in various ways.
+Using a brute force backtracing algorithm to solve Sudoku, the key data structure here is the stack we push boards into. Each iteration a new board is popped from the stack, try all the possibilities of next empty cell, and push those possible boards back into the stack. In the Crook's algorithm, if by elimination, finding lone rangers and preemptive sets cannot solve the problem, the backtracking will take over and solve the board we have discovered so far. It turns out the brute force part dominates the running time, and we focus on parallelizing backtracking in various ways. Discovering hidden cells are sometimes inheritently sequential: you have to find out one piece of clue to get to the next one. But by converting the DFS to BFS, aka filling a few cells at a time before searching along the deeper path, the boards put in the stack can be solved independently, hence parallelizable.
 
 ### 3.1 Challenges
 
