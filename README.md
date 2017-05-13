@@ -27,7 +27,7 @@ There are several challenges associated with solving sudoku puzzles in parallel.
 
 Within our project, we implemented two sequential algorithms for our baseline: a brute-force, backtracking algorithm and Crook's algorithm.
 
-#### Brute-Force Algorithm
+#### Backtracking Algorithm
 We implemented the following steps in our algorithm:
 ```
 Choose starting point
@@ -42,6 +42,10 @@ While (problem not solved):
 ```
 
 #### Crook's Algorithm
+Crook's algorithm describes the following few methods to determinisically solve cells in sudoku puzzles. We used the following three methods in our implementation: 
+1. *Elimination*: A cell has only one value left.
+2. *Lone Ranger*: In a row, column, or block, a value fits into only one cell.
+3. *Preemptive Set*: In a row, column, or block, a set of m values are contained with m cell.
 
 ## Approaches
 
