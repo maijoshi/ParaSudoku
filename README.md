@@ -96,10 +96,15 @@ We measured speedup on expert-level 9x9 suddoku boards. We evaluated the perform
 Here are the results:
 
 ![D1](D1.png)
+
 ![D5](D5.png)
+
 ![D10](D10.png)
+
 ![D15](D15.png)
+
 ![D20](D20.png)
+
 ![D25](D25.png)
 
 
