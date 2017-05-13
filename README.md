@@ -7,7 +7,7 @@ On Saturday, May 6th, we changed our project from ScanNet: Video Analysis on MXN
 
 ## Summary
 
-We implemented two sequential and three parallel sudoku solvers. We used a brute-force, backtracking algorithm and Crook's Algorithm to implement the two sequential sudoku solvers. We then parallelized the brute-force backtracking algorithm using Cuda and running multiple threads on the GPU. We parallelized Crook's Algorithm in two ways: 
+We implemented two sequential and three parallel sudoku solvers. We used a brute-force, backtracking algorithm and Crook's Algorithm to implement the two sequential sudoku solvers. We parallelized Crook's Algorithm in two ways: using a global stack and using local stacks. We then parallelized the backtracking algorithm using Cuda and it on the GPU. When run on the GHC machines with 16 threads, we were able to achieve 8x speedup with Crook's algorithm with global stacks, 22x speedup with Crook's algorithm with local stacks, and 20x speedup for the Cuda Sudoku Solver.
 
 ## Background
 
