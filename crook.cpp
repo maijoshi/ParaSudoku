@@ -20,7 +20,7 @@
 #define ROW 0
 #define COL 1
 #define BOX 2
-#define NDEBUG
+// #define NDEBUG
 #define MAX_ITER 625
 using namespace std;
 
@@ -302,10 +302,10 @@ bool Board::findPreemptiveSet(int setSize) {
             if (cnt == setSize) {
                 // found preemptive set
 #ifndef NDEBUG
-                //cout << "pset found: row=" << row << " ";
-                //for (int in: indexes[i])
-                //    cout << unfilled[in] << " ";
-                //cout << endl;
+                cout << "pset found: row=" << row << " ";
+                for (int in: indexes[i])
+                   cout << unfilled[in] << " ";
+                cout << endl;
 #endif
                 vector<int> pset;
                 bool b = false;
@@ -344,10 +344,10 @@ bool Board::findPreemptiveSet(int setSize) {
                     // found preemptive set
                     
 #ifndef NDEBUG
-                    //cout << "pset found: col=" << col << " ";
-                    //for (int in: indexes[i])
-                    //    cout << unfilled[in] << " ";
-                    //cout << endl;
+                    cout << "pset found: col=" << col << " ";
+                    for (int in: indexes[i])
+                       cout << unfilled[in] << " ";
+                    cout << endl;
 #endif
                     vector<int> pset;
                     bool b = false;
@@ -454,26 +454,10 @@ bool backtrackingUtil(stack<pair<int, Board>> &stk, Board b, int index, int dept
     return false;
 }
 
-//void backtrackingThreadWork(Board &crook_result, stack<pair<int, Board>> &stk, bool done) {
-//    while (!done) {
-//        cnt++;
-//        while (!stk.size());
-//        mtx.lock();
-//        int index = stk.top().first;
-//        Board b = stk.top().second;
-//        stk.pop();
-//        mtx.unlock();
-//        if (b.getTotalUnfilledCellsNum() == 0) {
-//            crook_result = b;
-//            break;
-//        }
-//        backtrackingUtil(stk, b, index, 5);
-//    }
-//}
 void backtracking(Board &crook_result) {
     stack<pair<int, Board>> stk;
     deque<pair<int, Board>> vec;
-    bool multiStack = false;
+    bool multiStack = true;
     
     Board tmp(crook_result);
     
@@ -522,13 +506,6 @@ void backtracking(Board &crook_result) {
         }
         else {
             threads.push_back(thread([&done, &vec, id, &stk, &crook_result](){
-                //        threads.push_back(thread([&done, &vec, id, &crook_result](){
-                //            int threadWorkload = (int)vec.size()/Thread_num;
-                //            stack<pair<int, Board>> stk;
-                //            for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
-                //                stk.push(vec[ii]);
-                //            }
-                
                 while (!done) {
                     cnt++;
                     mtx.lock();
@@ -549,69 +526,11 @@ void backtracking(Board &crook_result) {
             }));
         }
     }
-    double eTime = CycleTimer::currentSeconds();
-    //cout << eTime - sTime << endl;
     for (auto& thread:threads)
         thread.join();
-    eTime = CycleTimer::currentSeconds();
-    //cout << eTime - sTime << endl;
-    
-    //    cout << cnt;
+    double eTime = CycleTimer::currentSeconds();
+    cout << eTime - sTime << endl;
 }
-
-//void backtracking(Board &crook_result) {
-//    //    stack<pair<int, Board>> stk;
-//    vector<pair<int, Board>> vec;
-//
-//    Board tmp(crook_result);
-//
-//    bool done = false;
-//    //    stk.push(pair<int, Board>(findNextEmptyCellIndex(tmp.board, 0), tmp));
-//    double sTime = CycleTimer::currentSeconds();
-//    vector<thread> threads;
-//
-//
-//    int index = findNextEmptyCellIndex(tmp.board, 0);
-//    backtrackingUtil(vec, tmp, index, DEPTH);
-//
-//
-//    for (int id = 0; id < Thread_num; id++) {
-//        //        threads.push_back(thread([&done, &stk, &crook_result](){
-//        threads.push_back(thread([&done, &vec, id, &crook_result](){
-//            int threadWorkload = (int)vec.size()/Thread_num;
-//            stack<pair<int, Board>> stk;
-//            for (int ii = id*threadWorkload; ii < (id+1)*threadWorkload; ii++) {
-//                stk.push(vec[ii]);
-//            }
-//
-//            while (!done) {
-//                cnt++;
-//                mtx.lock();
-//                if (stk.size()) {
-//                    int index = stk.top().first;
-//                    Board b = stk.top().second;
-//                    stk.pop();
-//                    mtx.unlock();
-//                    if (b.getTotalUnfilledCellsNum() == 0) {
-//                        crook_result = b;
-//                        done = true;
-//                        break;
-//                    }
-//                    backtrackingUtil(stk, b, index, DEPTH);
-//                }
-//                else mtx.unlock();
-//            }
-//        }));
-//    }
-//    double eTime = CycleTimer::currentSeconds();
-//    cout << eTime - sTime << endl;
-//    for (auto& thread:threads)
-//        thread.join();
-//    eTime = CycleTimer::currentSeconds();
-//    cout << eTime - sTime << endl;
-//
-//    //    cout << cnt;
-//}
 
 int main(int numArgs, char* args[]) {
     Board bb;
@@ -663,15 +582,15 @@ int main(int numArgs, char* args[]) {
             if (done) break;
             change = false;
 #ifndef NDEBUG
-            //cout << "after elimination: " << done << endl;
-            //b.printBoard();
-            //b.printMarkup();
+            cout << "after elimination: " << done << endl;
+            b.printBoard();
+            b.printMarkup();
 #endif
             // step 2: lone ranger
             if (b.loneRangers()) { // if any changes made, back to step 1
 #ifndef NDEBUG
-                //cout << "after lone ranger search: " << endl;
-                //b.printBoard();
+                cout << "after lone ranger search: " << endl;
+                b.printBoard();
 #endif
                 continue;
             }
@@ -681,9 +600,9 @@ int main(int numArgs, char* args[]) {
             for (int i = 2; i < size; i++) {
                 if (b.findPreemptiveSet(i)) { // if any changes made, back to step 1
 #ifndef NDEBUG
-                    //cout << "after findPreemptiveSet " << i << ": " << endl;
-                    //b.printMarkup();
-                    //b.printBoard();
+                    cout << "after findPreemptiveSet " << i << ": " << endl;
+                    b.printMarkup();
+                    b.printBoard();
 #endif
                     change = true;
                     break;

@@ -1,11 +1,10 @@
 //
 //  Board.hpp
-//  sudokiller
 //
 //  Created by Sophie on 5/11/17.
 //  Copyright © 2017 Sophie. All rights reserved.
 //
-// #ifndef Board_hpp
+#ifndef Board_hpp
 #define Board_hpp
 
 
@@ -138,7 +137,6 @@ public:
     
     void setBoardVal(int row, int col, int val) {
         board[row][col] = val;
-        // cout << "set " << row << ", " << col << "to " << val << endl;
         markup[row][col] = 0;
         for (int i = 0; i < size; i++) {
             removeFromMarkup(row, i, val);
@@ -155,6 +153,4 @@ public:
     bool findPreemptiveSet(int setSize);
 };
 
-
-
-// #endif /* Board_hpp */
+#endif /* Board_hpp */

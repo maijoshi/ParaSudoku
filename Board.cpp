@@ -1,6 +1,5 @@
 //
 //  Board.cpp
-//  sudokiller
 //
 //  Created by Sophie on 5/11/17.
 //  Copyright © 2017 Sophie. All rights reserved.
@@ -10,7 +9,7 @@
 #include <algorithm>
 
 bool Board::elimination() {
-//#pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++) {
             int m = 0;
