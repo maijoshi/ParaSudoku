@@ -22,7 +22,7 @@ Using a brute force backtracing algorithm to solve Sudoku, the key data structur
 
 ### 3.1 Challenges
 
-There are several challenges associated with solving sudoku puzzles in parallel. Solving sudoku puzzles is an NP-complete problem, with ove 6.67 x 10^21 distinct solutions for the 9x9 board, thus making Sudoku a complex problem to solve. Furthermore, each cell depends on the corresponding values in its row, column, and subbox. Since each cell is dependent on so many other cells, there is no straightforward to parallelize solving Sudoku.
+There are several challenges associated with solving sudoku puzzles in parallel. Solving sudoku puzzles is an NP-complete problem, with ove 6.67 x 10^21 distinct solutions for the 9x9 board, thus making Sudoku a complex problem to solve. Furthermore, each cell depends on the corresponding values in its row, column, and subbox. Since each cell is dependent on so many other cells, there is no straightforward to parallelize solving Sudoku. However, given the large number of cells in a Sudoku board and the large number of possible states a Sudoku board can be in, there is a huge opportunity for parallelization. 
 
 ### 3.2 Sequential Algorithms
 
