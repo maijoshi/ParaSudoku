@@ -473,7 +473,7 @@ bool backtrackingUtil(stack<pair<int, Board>> &stk, Board b, int index, int dept
 void backtracking(Board &crook_result) {
     stack<pair<int, Board>> stk;
     deque<pair<int, Board>> vec;
-    bool multiStack = true;
+    bool multiStack = false;
     
     Board tmp(crook_result);
     
@@ -619,8 +619,8 @@ int main(int numArgs, char* args[]) {
     double crook_time = 0.0;
     
     if (numArgs < 2) {
-        DEPTH = 15;
-        Thread_num = 16;
+        DEPTH = 5;
+        Thread_num = 25;
     }
     else {
         DEPTH = atoi(args[1]);
@@ -649,7 +649,7 @@ int main(int numArgs, char* args[]) {
         b.initialMarkup();
         bool done = false;
         bool change = false;
-        bool use_crook = true;//false;
+        bool use_crook = false;//true;
         while (!done && use_crook) {
             // step 1: elimination
             done = b.elimination();

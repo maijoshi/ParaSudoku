@@ -5,8 +5,7 @@
 //  Created by Sophie on 5/11/17.
 //  Copyright © 2017 Sophie. All rights reserved.
 //
-
-#ifndef Board_hpp
+// #ifndef Board_hpp
 #define Board_hpp
 
 
@@ -158,4 +157,4 @@ public:
 
 
 
-#endif /* Board_hpp */
+// #endif /* Board_hpp */
