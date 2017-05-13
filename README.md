@@ -98,7 +98,7 @@ We used the following algorithm to create a parallelized sudoku solver on the GP
 
 2) Try to solve each of these new boards separately on different threads on the GPU. If a solution is found, terminate and return the solution.
 
-In step 2, instead of recursively backtracking, we use a iterative loop that simulates a backtracking stack with int array to be used in  Cuda device function.
+In step 1, the boards found is stored in a large array. Different threads processes boards with consecutive addresses in both step 1 and step 2, and the work is distributed evenly. In step 2, instead of recursively backtracking or explicitly utilizing stack, we use a iterative loop that simulates a backtracking stack with int array to be used in  Cuda device function.
 
 ### 4.3 Future Approaches
 
