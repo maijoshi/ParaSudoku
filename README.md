@@ -16,8 +16,7 @@ Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are b
 Below are examples of a sudoku puzzle (top) and its solution (bottom):
 
 {% include image.html url="Sudoku.png" description="Figure 1" %}
-
-![Solved Sudoku](Solved_Sudoku.png)
+{% include image.html url="Solved_Sudoku.png" description="Figure 2" %}
 
 ### Challenges
 
@@ -53,7 +52,7 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
 
-![Crook's Algorithm](Crook_Algorithm.png)
+{% include image.html url="Crook_Algorithm.png" description="Figure 2" %}
 
 After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took, thus slowing down the entire Crook's Algorithm. In order to make the backtracking portion more efficient, we parallelized the backtracking section in two different ways:
 
