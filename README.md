@@ -141,4 +141,4 @@ Here are the results:
 ## References
 [Crook's Algorithm Paper](http://www.ams.org/notices/200904/tx090400460p.pdf)
 
-[Parallelized Sudoku Solving Using OpenMP]http://www.cse.buffalo.edu/faculty/miller/Courses/CSE633/Sankar-Spring-2014-CSE633.pdf
+[Parallelized Sudoku Solving Using OpenMP](http://www.cse.buffalo.edu/faculty/miller/Courses/CSE633/Sankar-Spring-2014-CSE633.pdf)
