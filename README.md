@@ -11,18 +11,27 @@ We implemented two sequential and three parallel sudoku solvers. We used a brute
 
 ## Background
 
-Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are broken down into 9 3x3 subboxes. The goal of the game is to play the numbers 1-9 in the cells such that no row, column, or box contains the same number twice.
+Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are broken down into 9 3x3 subboxes. The goal of the game is to place the numbers 1-9 into the cells such that no other cells in the same row, column, or box contain the same number.
+
+Below are examples of a sudoku puzzle (top) and its solution (bottom):
 
 ![Sudoku](Sudoku.png)
 
 ![Solved Sudoku](Solved_Sudoku.png)
 
+### Challenges
 
+There are several challenges associated with solving sudoku puzzles in parallel. Solving sudoku puzzles is an NP-complete problem, with ove 6.67 x 10^21 distinct solutions for the 9x9 board, thus making Sudoku a complex problem to solve. Furthermore, each cell depends on the corresponding values in its row, column, and subbox. Since each cell is dependent on so many other cells, there is no straightforward to parallelize solving Sudoku.
 
+### Sequential Algorithms
 
-## Challenges
+Within our project, we implemented two sequential algorithms for our baseline: a brute-force, backtracking algorithm and Crook's algorithm.
+
+#### Brute-Force Algorithm
 
 ## Approaches
+
+
 
 ## Results
 
