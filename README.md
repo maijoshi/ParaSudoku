@@ -15,8 +15,7 @@ Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are b
 
 Below are examples of a sudoku puzzle (top) and its solution (bottom):
 
-![Sudoku](Sudoku.png)
-
+{% include image.html url="Sudoku.png" description="Figure 1" %}
 ![Solved Sudoku](Solved_Sudoku.png)
 
 ### Challenges
