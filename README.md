@@ -50,6 +50,8 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 ## 4. Approaches
 
+We developed almost all of our code using C++ since it allows us to use threads easily. We targeted the GHC machines.
+
 ### 4.1 Parallelized Crook's Algorithm
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
