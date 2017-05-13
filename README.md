@@ -45,11 +45,11 @@ While (problem not solved):
 Crook's algorithm describes the following few methods to determinisically solve cells in sudoku puzzles. We used the following three methods in our implementation: 
 1. *Elimination*: A cell has only one value left.
 2. *Lone Ranger*: In a row, column, or block, a value fits into only one cell.
-3. *Preemptive Set*: In a row, column, or block, a set of m values are contained with m cell.
+3. *Preemptive Set*: In a row, column, or block, a set of m values are contained within m cells.
 
 ## Approaches
 
-
+### Parallelizing Crook's Algorithm
 
 ## Results
 
