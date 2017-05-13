@@ -15,8 +15,9 @@ Sudoku is traditionally played on a 9x9 board. These 81 cells on the board are b
 
 Below are examples of a sudoku puzzle (top) and its solution (bottom):
 
-{% include image.html url="Sudoku.png" description="Figure 1" %}
-{% include image.html url="Solved_Sudoku.png" description="Figure 2" %}
+![Sudoku](Sudoku.png)
+
+![Solved Sudoku](Solved_Sudoku.png)
 
 ### Challenges
 
@@ -52,7 +53,7 @@ Crook's algorithm describes the following few methods to determinisically solve 
 
 Our implementation of Crook's Algorithm tries each of the aforementioned methods in order. If any method makes a change to the board, the solver starts over again from the elimination phase. If none of these three methods work, the algorithm resorts to backtracking to solve the rest of the puzzle. The following chart visualizes this process: 
 
-{% include image.html url="Crook_Algorithm.png" description="Figure 2" %}
+![Crook's Algorithm](Crook_Algorithm.png)
 
 After developing and running Crook's algorithm, we noticed that the most time-intensive part of the algorithm was the backtracking portion. The backtracking portion took about 100 times longer to run than the elimination, longer ranger, and preemptive set methods took, thus slowing down the entire Crook's Algorithm. In order to make the backtracking portion more efficient, we parallelized the backtracking section in two different ways:
 
@@ -112,8 +113,11 @@ These results indicate that many of our hypothesis were correct:
 
 2) The charts of D at 5, 10, and 15 further confirm this hypothesis that the global stack algorithm is facing issues with runtime and thus has longer runtimes. In each of these graphs, the global stack algorithm is still slower than the local stack algorithm but differences in runtime between them are narrowing. We suspect that since the work that each thread does in between pushing and popping from the global stack is increasing, the contention in between threads to modify the global stack is decreasing. Thus, there is a corresponding decrease in runtime for the global stack algorithm.
 
+3) When D = 20, the performances of the global stack algorithm and local stack algorithm are roughly equal. Furthermore, the runtime of the global stack algorithm actually decreases now with the increase in the number of threads used. We believe that this is because there is significant enough work for each thread to do that its beneficial for this work to be split up and there are fewer times that each thread is trying to access the global stack.
 
+4) When D = 25, the global stack algorithm performs better than the local stack algorithm. We suspect that this is due to the work imbalance problem that the local stack algorithm faces, where one thread is doing all the work while others are waiting idly by. This problem could be mitigated by work stealing.
 
+### Cuda Sudoku Solver
 
 
 
