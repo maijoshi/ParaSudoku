@@ -66,6 +66,8 @@ In the first version, the parallelized portion of the backtracking portion works
     1. Fill in D spots of board.
     2. Push back all valid boards to the global stack.
     3. Pull another board and repeat the process of filling in the next D spots.
+    
+We played around with the values X (the number of threads) and D (the number of spots that a thread would fill before pushing the valid boards back to the stack) to determine the optimal values. 
 
 #### Version 2: Local Stack
 
