@@ -21,7 +21,7 @@
 #define COL 1
 #define BOX 2
 #define NDEBUG
-#define MAX_ITER 1
+#define MAX_ITER 625
 using namespace std;
 
 const int size = 9;
@@ -197,8 +197,8 @@ bool Board::loneRangers() {
                 // found lone ranger
                 setBoardVal(i, col, k);
 #ifndef NDEBUG
-                cout << "lone ranger - checked row:" << endl;
-                printMarkup();
+                //cout << "lone ranger - checked row:" << endl;
+                //printMarkup();
 #endif
                 return true;
             }
@@ -221,7 +221,7 @@ bool Board::loneRangers() {
                 // found lone ranger
                 setBoardVal(row, j, k);
 #ifndef NDEBUG
-                cout << "lone ranger - checked col:" << endl;
+                //cout << "lone ranger - checked col:" << endl;
                 printMarkup();
 #endif
                 return true;
@@ -302,10 +302,10 @@ bool Board::findPreemptiveSet(int setSize) {
             if (cnt == setSize) {
                 // found preemptive set
 #ifndef NDEBUG
-                cout << "pset found: row=" << row << " ";
-                for (int in: indexes[i])
-                    cout << unfilled[in] << " ";
-                cout << endl;
+                //cout << "pset found: row=" << row << " ";
+                //for (int in: indexes[i])
+                //    cout << unfilled[in] << " ";
+                //cout << endl;
 #endif
                 vector<int> pset;
                 bool b = false;
@@ -344,10 +344,10 @@ bool Board::findPreemptiveSet(int setSize) {
                     // found preemptive set
                     
 #ifndef NDEBUG
-                    cout << "pset found: col=" << col << " ";
-                    for (int in: indexes[i])
-                        cout << unfilled[in] << " ";
-                    cout << endl;
+                    //cout << "pset found: col=" << col << " ";
+                    //for (int in: indexes[i])
+                    //    cout << unfilled[in] << " ";
+                    //cout << endl;
 #endif
                     vector<int> pset;
                     bool b = false;
@@ -550,11 +550,11 @@ void backtracking(Board &crook_result) {
         }
     }
     double eTime = CycleTimer::currentSeconds();
-    cout << eTime - sTime << endl;
+    //cout << eTime - sTime << endl;
     for (auto& thread:threads)
         thread.join();
     eTime = CycleTimer::currentSeconds();
-    cout << eTime - sTime << endl;
+    //cout << eTime - sTime << endl;
     
     //    cout << cnt;
 }
@@ -641,9 +641,16 @@ int main(int numArgs, char* args[]) {
     }
     bb.printBoard();
     
-    
+    double minTime = 10.0;
+    double minThreads = 1;
+    double minDepth = 1;
+    ofstream outputFile;
+    outputFile.open("outputGlobalStack.csv");
+
     Board b;
     for (int iter = 0; iter < MAX_ITER; iter++) {
+	Thread_num = iter/25+1;
+	DEPTH = iter%25+1;
         b = bb;
         double startTime = CycleTimer::currentSeconds();
         b.initialMarkup();
@@ -656,15 +663,15 @@ int main(int numArgs, char* args[]) {
             if (done) break;
             change = false;
 #ifndef NDEBUG
-            cout << "after elimination: " << done << endl;
-            b.printBoard();
-            b.printMarkup();
+            //cout << "after elimination: " << done << endl;
+            //b.printBoard();
+            //b.printMarkup();
 #endif
             // step 2: lone ranger
             if (b.loneRangers()) { // if any changes made, back to step 1
 #ifndef NDEBUG
-                cout << "after lone ranger search: " << endl;
-                b.printBoard();
+                //cout << "after lone ranger search: " << endl;
+                //b.printBoard();
 #endif
                 continue;
             }
@@ -674,9 +681,9 @@ int main(int numArgs, char* args[]) {
             for (int i = 2; i < size; i++) {
                 if (b.findPreemptiveSet(i)) { // if any changes made, back to step 1
 #ifndef NDEBUG
-                    cout << "after findPreemptiveSet " << i << ": " << endl;
-                    b.printMarkup();
-                    b.printBoard();
+                    //cout << "after findPreemptiveSet " << i << ": " << endl;
+                    //b.printMarkup();
+                    //b.printBoard();
 #endif
                     change = true;
                     break;
@@ -693,10 +700,20 @@ int main(int numArgs, char* args[]) {
         double endTime = CycleTimer::currentSeconds();
         time += endTime - startTime;
         crook_time += middleTime - startTime;
+	outputFile << Thread_num << ", " << DEPTH << ", " << 
+	(endTime - startTime) << "\n";
+
+	if (endTime - startTime < minTime) {
+		minTime = endTime - startTime;
+		minThreads = Thread_num;
+		minDepth = DEPTH;
+	}
     }
     //    cout << cnt;
     cout << "average time=" << time/MAX_ITER << endl;
     cout << "average crook time=" << crook_time/MAX_ITER << endl;
+    cout << "MinThreads: " << minThreads << ", minDepth: " << minDepth 
+    	<< ", MinTime: " << minTime << endl;
     b.printBoard();
     
     return 0;
