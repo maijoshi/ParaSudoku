@@ -31,6 +31,7 @@ Within our project, we implemented two sequential algorithms for our baseline: a
 We implemented the following steps in our algorithm:
 Choose starting point
 While (problem not solved):
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	For each path from starting point:
 		If selected path has no conflicts:
 			Select path and make recursive call to rest of problem
