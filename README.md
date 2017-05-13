@@ -69,7 +69,19 @@ In the first version, the parallelized portion of the backtracking portion works
     
 We played around with the values X (the number of threads) and D (the number of spots that a thread would fill before pushing the valid boards back to the stack) to determine the optimal values. 
 
+We played around with the value of D instead of simply setting D = 1 in order to reduce contention. If we pushed and popped from the global stack every time a thread filled in a new spot on the board, all the threads would be doing very little work and would be contending for the lock on the global stack often. This, in turn, would cause a major downturn in performance. 
+
+Based on our hypothesis that the threads would be contending for the locks on the global stack often, we decided to implement a second version of a parallelized backtracking portion in Crook's Algorithm.
+
 #### Version 2: Local Stack
+
+In the second version, we had each thread push and pull boards from its own local stack instead of the common global stack. The parallelized portion of the backtracking portion works as follows:
+
+1. Create X threads and send each thread a different starting board and a local stack.
+2. Each of the X threads should then:
+    1. Fill in D spots of board.
+    2. Push back all valid boards to its local stack.
+    3. Pull another board and repeat the process of filling in the next D spots.
 
 ## Results
 
